@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Part 1 · Selective memory · Learning What Matters</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="common/deck.css">
+<link rel="stylesheet" href="common/ti.css">
+</head>
+<body>
+<!--
+  Part 1 · Selective memory
+  Edit the slides between SLIDES and /SLIDES. One <section class="slide"> = one 1440×810 slide.
+    data-title  name in the slide list          class="f"   revealed step by step with →
+    data-anim   animation(s) played on entry     img/        images used by this chapter
+  Shared styles: common/deck.css · charts: common/charts.js · KVzip animations: common/kv_anim.js
+-->
+<div id="stage">
+<!-- SLIDES -->
+<section class="slide divider" data-sec="1 · Selective memory" data-title="Part 1 · Selective memory">
+  <p class="dv-k">Part 1 · Retain</p>
+  <h2 class="st" style="top:74px">Selective memory</h2>
+  <p class="dv-q">How do models retain the context that future queries will need?</p>
+  <div class="sb" style="top:286px">
+      <div class="rm lg" data-on="c1">
+      <div class="verb c1" style="grid-column:1">Retain</div><div class="verb c2" style="grid-column:2">Use</div><div class="verb c3" style="grid-column:3">Predict</div>
+      <div class="th mem c1"><b>Selective memory</b><span>Retain useful context</span></div>
+      <div class="th safe c2"><b>Safety-aware learning</b><span>Condition the use of dual-use knowledge</span></div>
+      <div class="th world c3"><b>Predictive world models</b><span>Learn from diverse visual experience and demonstrations</span></div>
+      <div class="pp c1">KVzip <span class="v">NeurIPS’25</span><br>Fast KVzip <span class="v">NeurIPS’26</span></div>
+      <div class="pp c2">Mark, Don’t Erase <span class="v">NeurIPS’26</span></div>
+      <div class="pp c3">Seoul World Model <span class="v">ECCV’26</span><br>LaLa-World <span class="v">arXiv soon</span><br>WATCH <span class="v">arXiv soon</span></div>
+      <div class="br" style="grid-column:1"><span>Efficient</span></div><div class="br" style="grid-column:2/4"><span>Reliable &amp; Grounded</span></div>
+      </div>
+  </div>
+</section>
+
+<section class="slide" data-sec="1 · Selective memory" data-title="KV cache: memory grows with context">
+  <h2 class="st">Key-value cache: memory grows with every token</h2>
+  <div class="sb" style="display:grid;grid-template-columns:600px 1fr;gap:48px;align-items:start">
+    <div class="col" style="gap:22px">
+      <ul class="b sm">
+        <li>Each new token attends to the cached <b>keys and values</b> of every previous token.</li>
+        <li>KV memory = 2 × layers × KV heads × head_dim × seq_len × bytes</li>
+        <li>Llama-3-8B (32 layers, 8 KV heads, d = 128, fp16): <b>128 KB per token</b></li>
+        <li class="f">At ~123K tokens the KV cache is <b class="red">as large as the model</b>.</li>
+        <li class="f">Compressing KV caches → <b>efficient inference</b></li>
+      </ul>
+    </div>
+    <figure style="margin:0">
+      <svg class="chart" id="ch-kvmem" viewBox="0 0 700 470" role="img" aria-label="KV cache memory of Llama-3-8B grows linearly with context length and passes the 16 GB of model weights near 123K tokens"></svg>
+      <figcaption class="cap">Llama-3-8B, fp16, single sequence. Weights ≈ 16 GB.</figcaption>
+    </figure>
+  </div>
+  <div class="cite">Llama-3-8B shape (32 layers, 8 KV heads, model dim 4,096): Llama Team, “The Llama 3 Herd of Models”, 2024, Table 3</div>
+</section>
+
+<section class="slide" data-sec="1 · Selective memory" data-title="KV cache vs. model weights: reported numbers" data-skip>
+  <h2 class="st">The KV cache can outgrow the model <small>reported numbers</small></h2>
+  <div class="sb" style="display:grid;grid-template-columns:700px 1fr;column-gap:56px;row-gap:14px;align-content:start">
+    <div class="kvr-key" style="grid-column:1/3"><span><i style="background:#8A8A8A"></i>Model weights</span><span><i style="background:#3C78D8"></i>KV cache</span><span><i style="background:#D4D4D4"></i>Other</span><span class="soft">all in FP16</span></div>
+    <figure style="margin:0">
+      <p class="kvr-h">One long context, one sequence</p>
+      <svg class="chart" viewBox="0 0 700 270" role="img" aria-label="Llama-3-8B at 123K tokens: weights 16.1 GB, KV cache 16.1 GB. Qwen2.5-14B at 120K tokens: weights 28 GB, KV cache about 33 GB.">
+        <g stroke="#E7E7E7" stroke-width="1"><path d="M350 30V236M450 30V236M550 30V236M650 30V236"/></g>
+        <path d="M250 30V236" stroke="#BDBDBD" stroke-width="1"/>
+        <g font-size="14" fill="#666" text-anchor="middle"><text x="250" y="258">0</text><text x="350" y="258">10</text><text x="450" y="258">20</text><text x="550" y="258">30</text><text x="650" y="258">40 GB</text></g>
+        <g text-anchor="end"><text x="236" y="72" font-size="18" font-weight="700" fill="#222">Llama-3-8B</text><text x="236" y="94" font-size="14" fill="#666">123K-token context</text>
+          <text x="236" y="172" font-size="18" font-weight="700" fill="#222">Qwen2.5-14B</text><text x="236" y="194" font-size="14" fill="#666">120K-token context</text></g>
+        <path d="M250 52H407Q411 52 411 56V70Q411 74 407 74H250Z" fill="#8A8A8A"><title>Llama-3-8B model weights: 16.1 GB</title></path>
+        <path d="M250 76H407Q411 76 411 80V94Q411 98 407 98H250Z" fill="#3C78D8"><title>Llama-3-8B KV cache at 123K tokens: 16.1 GB</title></path>
+        <path d="M250 152H526Q530 152 530 156V170Q530 174 526 174H250Z" fill="#8A8A8A"><title>Qwen2.5-14B model weights: 28 GB</title></path>
+        <path d="M250 176H576Q580 176 580 180V194Q580 198 576 198H250Z" fill="#3C78D8"><title>Qwen2.5-14B KV cache at 120K tokens: ≈33 GB</title></path>
+        <g font-size="15" fill="#222"><text x="419" y="68">16.1 GB</text><text x="419" y="92">16.1 GB</text><text x="538" y="168">28 GB</text><text x="588" y="192" font-weight="700">≈33 GB</text></g>
+      </svg>
+      <p class="kvr-n">Llama-3-8B: 2 (K, V) × 32 layers × 8 KV heads × 128 dims × 2 bytes = <b>128 KB per token</b>, so ≈123K tokens hold as much as the 16 GB of weights.</p>
+      <p class="kvr-n">Qwen2.5-14B: “caching 120K tokens in Qwen2.5-14B with FP16 precision requires approximately 33 GB memory … surpassing the model’s 28 GB parameter storage” <span class="soft">KVzip (NeurIPS’25)</span></p>
+    </figure>
+    <figure style="margin:0">
+      <p class="kvr-h">Serving a 13B model on one A100 (40 GB)</p>
+      <svg class="chart" viewBox="0 0 560 96" role="img" aria-label="GPU memory when serving a 13B model on a 40 GB A100: model weights about 65 percent, KV cache about 30 percent, other about 5 percent.">
+        <g font-size="16" fill="#222"><text x="0" y="26">Model weights 65%</text><text x="361" y="26">KV cache ≈30%</text></g>
+        <rect x="0" y="36" width="359" height="24" fill="#8A8A8A"><title>Model weights: ≈65% (26 GB)</title></rect>
+        <rect x="361" y="36" width="166" height="24" fill="#3C78D8"><title>KV cache: ≈30%</title></rect>
+        <path d="M529 36H552Q556 36 556 40V56Q556 60 552 60H529Z" fill="#D4D4D4"><title>Other: ≈5%</title></path>
+        <text x="556" y="84" font-size="14" fill="#666" text-anchor="end">other ≈5%</text>
+      </svg>
+      <p class="kvr-n">“Approximately 65% of the memory is allocated for the model weights … Close to 30% of the memory is used to store the dynamic states of the requests.”</p>
+      <p class="kvr-n">OPT-13B: “the KV cache of a single token demands 800 KB of space”; for a 2,048-token request, “the KV cache of one request … can be as much as 1.6 GB.” <span class="soft">vLLM (SOSP’23)</span></p>
+    </figure>
+  </div>
+  <div class="cite">Kwon et al., “Efficient Memory Management for Large Language Model Serving with PagedAttention”, SOSP 2023 · Kim et al., “KVzip: Query-Agnostic KV Cache Compression with Context Reconstruction”, NeurIPS 2025 · Llama Team, “The Llama 3 Herd of Models”, 2024</div>
+</section>
+
+<section class="slide" data-sec="1 · Selective memory" data-title="Which KV pairs should we keep?">
+  <h2 class="st">KV cache compression: which KV pairs should we keep?</h2>
+  <div class="sb" style="top:140px">
+    <svg class="chart" id="ch-qaware" viewBox="0 0 1312 556" role="img" aria-label="Query-aware eviction recomputes and evicts for every new query; query-agnostic compression is done once and reused for any query"></svg>
+  </div>
+  <div class="cite">H2O (NeurIPS’23) · SnapKV (NeurIPS’24) · PyramidKV</div>
+</section>
+<section class="slide paper" data-sec="1 · Selective memory" data-title="KVzip (NeurIPS’25)">
+  <p class="venue">NeurIPS’25 (<span class="red">Oral presentation</span>)</p>
+  <h2><b>KVzip:</b> Query-Agnostic KV Cache Compression with Context Reconstruction</h2>
+  <div class="authors">
+    <div><b>Jang-Hyun Kim</b><span>SNU</span></div>
+    <div><b>Jinuk Kim</b><span>SNU</span></div>
+    <div><b>Sangwoo Kwon</b><span>SNU</span></div>
+    <div><b>Jae W. Lee</b><span>SNU</span></div>
+    <div><b class="me">Sangdoo Yun</b><span>NAVER AI Lab</span></div>
+    <div><b>Hyun Oh Song</b><span>SNU</span></div>
+  </div>
+  <div class="links"><span>arXiv:2505.23416</span><span>github.com/snu-mllab/KVzip</span><span>janghyun1230.github.io/kvzip</span></div>
+</section>
+<section class="slide" data-sec="1 · Selective memory" data-title="KVzip: the LLM as a context encoder-decoder">
+  <h2 class="st">KVzip: a good compression can <b>reconstruct</b> the original</h2>
+  <div class="sb" style="top:118px">
+    <svg class="chart" id="ch-kvzipidea" viewBox="0 0 1312 630" role="img" aria-label="Ideal compression: the LLM encodes the context into a compressed KV cache and, prompted with “Repeat the previous context:”, decodes the original context back from that cache alone. Choosing which of about 30 million KV pairs to keep is combinatorial, so this is hard to optimize directly. KVzip instead runs one forward pass over the context, the repeat prompt and a copy of the context; context, repeat prompt and copy are arranged in one row, with curved attention arrows from the copy back to the context. A matrix shows importance separately for each KV head and context token. The least important pairs are evicted, and the one compressed cache serves any future query."></svg>
+  </div>
+  <div class="cite">Schematic with toy importance values · n ≈ 30M = 32 layers × 8 KV heads × 120K tokens (Llama-3-8B) · Kim et al., “KVzip: Query-Agnostic KV Cache Compression with Context Reconstruction”, NeurIPS 2025</div>
+</section>
+<section class="slide" data-sec="1 · Selective memory" data-title="KVzip in motion" data-anim="kvzip" data-skip>
+  <h2 class="st">KVzip in motion <small>score each KV pair by how much reconstruction uses it</small></h2>
+  <div class="sb" style="top:132px">
+    <div class="ctl" id="kvz-chips" role="group" aria-label="Animation phases" style="margin-bottom:14px">
+      <button type="button" data-seek="kvzip:0">1 · Prefill</button>
+      <button type="button" data-seek="kvzip:2.6">2 · Reconstruct</button>
+      <button type="button" data-seek="kvzip:7.6">3 · Evict</button>
+      <button type="button" data-seek="kvzip:9.6">4 · Reuse</button>
+      <button type="button" data-replay="kvzip" style="margin-left:auto">↻ Replay</button>
+    </div>
+    <svg class="chart" id="ch-kvzipflow" viewBox="0 0 1312 440" role="img" aria-label="Animation: the context fills a KV cache of 6 heads by 13 tokens; the model repeats the context and each KV pair keeps the maximum attention it receives; the 70 percent least-used pairs are evicted; three later questions read the same compressed cache and find Paris, 1889 and 330 m"></svg>
+  </div>
+  <div class="cite">Illustrative toy example (one layer, 6 heads). In KVzip the scores come from one teacher-forced forward pass over “Repeat the previous context” + context.</div>
+</section>
+<section class="slide" data-sec="1 · Selective memory" data-title="KV importance, head by head" data-anim="kvheat" data-skip>
+  <h2 class="st">What gets kept? Importance per head and token</h2>
+  <div class="sb" style="display:grid;grid-template-rows:auto auto;gap:16px;top:140px">
+    <svg class="chart" id="ch-kvheat" viewBox="0 0 1312 470" role="img" aria-label="Heat map of KV importance for 8 heads over the tokens of a sentence; low-importance pairs are evicted at the chosen budget"></svg>
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap">
+      <label class="range" for="kv-budget">KV budget ratio <input type="range" id="kv-budget" min="10" max="100" step="5" value="30"> <b id="kv-budget-v" style="font-variant-numeric:tabular-nums;min-width:52px">30%</b></label>
+      <div id="kv-budget-txt" style="font-size:18px;color:#444;font-variant-numeric:tabular-nums"></div>
+      <button class="ctl-btn" type="button" data-replay="kvheat">▶ Sweep 100% → 30%</button>
+      <div class="note">Illustrative scores. Each (layer, head, token) pair is scored on its own.</div>
+    </div>
+  </div>
+</section>
+<section class="slide" data-sec="1 · Selective memory" data-title="KVzip results">
+  <h2 class="st">KVzip – results</h2>
+  <div class="sb" style="display:grid;grid-template-columns:900px 1fr;gap:36px;align-items:start;top:128px">
+    <img class="fig" src="img/kvzip_results.webp" alt="Twelve benchmarks across retrieval, contextual QA and redundancy: KVzip keeps accuracy near the full cache down to low KV cache ratios, while H2O, SnapKV and PyramidKV drop sharply." style="width:900px">
+    <div class="stats" style="gap:26px;padding-top:16px">
+      <div class="stat"><div class="n red">3–4×</div><div class="l" style="font-size:23px">smaller KV cache, negligible loss</div></div>
+      <div class="stat"><div class="n">~2×</div><div class="l" style="font-size:23px">faster decoding (FlashAttention)</div></div>
+      <div class="stat"><div class="n">170K</div><div class="l" style="font-size:23px">tokens of context</div></div>
+      <div class="stat"><div class="l" style="font-size:23px">LLaMA3.1 · Qwen2.5 · Gemma3<br>QA, retrieval, reasoning, code<br>Query-aware baselines degrade even at a 90% budget when the cache is reused across queries.</div></div>
+    </div>
+  </div>
+  <div class="cite">Qwen2.5-7B-Instruct-1M, query-agnostic setting (one compressed cache, many queries)</div>
+</section>
+<section class="slide" data-sec="1 · Selective memory" data-title="KVPress benchmark" data-anim="kvpress">
+  <h2 class="st">KVPress benchmark <small>88% compression</small></h2>
+  <div class="sb" style="display:grid;grid-template-columns:900px 1fr;gap:40px;align-items:start;top:134px">
+    <svg class="chart" id="ch-kvpress" viewBox="0 0 900 600" role="img" aria-label="Score at 88 percent compression: KVzip 92.24 versus no compression 95.32; the next best method, ExpectedAttention, scores 72.78"></svg>
+    <div class="col" style="gap:26px;padding-top:40px">
+      <div class="stat"><div class="n red">−3.2%</div><div class="l">KVzip vs. no compression, with 88% of the cache removed</div></div>
+      <div class="stat"><div class="n" style="color:#888">−23.6%</div><div class="l">best other method (ExpectedAttention)</div></div>
+      <p class="note">KVzip needs extra forward passes for reconstruction.</p>
+    </div>
+  </div>
+  <div class="cite">NVIDIA KVPress leaderboard, snapshot as shown in the July 2026 talk</div>
+  <button class="replay" type="button" data-replay="kvpress">↻ Replay</button>
+</section>
+<section class="slide" data-sec="1 · Selective memory" data-title="KVzip’s bottleneck: prefill time" data-anim="kvprefill">
+  <h2 class="st">KVzip’s bottleneck – increased prefill time</h2>
+  <div class="sb" style="display:grid;grid-template-columns:680px 1fr;gap:50px;align-items:center">
+    <figure style="margin:0">
+      <svg class="chart" id="ch-prefill" viewBox="0 0 640 346" role="img" aria-label="Prefill race at 170K tokens: no compression finishes in about 48 seconds, KVzip needs about 150 seconds because of the reconstruction pass"></svg>
+      <figcaption class="cap">Qwen2.5-7B-1M, 170K tokens, H100 · times read from the Fast KVzip paper’s plot (≈) · bars fill in proportion to real seconds</figcaption>
+    </figure>
+    <div class="col" style="gap:0;align-items:center">
+      <div class="box" style="width:220px;background:#EFEFEF;font-size:26px">LM</div>
+      <div style="width:2px;height:46px;background:#777;position:relative"><span style="position:absolute;left:-6px;top:-4px;border:7px solid transparent;border-bottom:10px solid #777;border-top:0"></span></div>
+      <div class="box" style="font-size:26px;padding:22px 26px"><span class="crim"><b>Context</b></span> + <i style="color:#666">[Repeat prompt]</i> + <span class="crim"><b>Context</b></span></div>
+      <p class="lead" style="text-align:center;font-size:24px;margin-top:30px">Context reconstruction runs <b>at runtime</b>:<br>about <b class="red">3× the prefill time</b> of no compression.</p>
+    </div>
+  </div>
+  <button class="replay" type="button" data-replay="kvprefill">↻ Replay</button>
+</section>
+<section class="slide paper" data-sec="1 · Selective memory" data-title="Fast KVzip (NeurIPS’26)">
+  <p class="venue">NeurIPS’26</p>
+  <h2><b>Fast KVzip:</b> Efficient and Accurate LLM Inference with Gated KV Eviction</h2>
+  <div class="authors">
+    <div><b>Jang-Hyun Kim</b><span>NAVER AI Lab</span></div>
+    <div><b>Dongyoon Han</b><span>NAVER AI Lab</span></div>
+    <div><b class="me">Sangdoo Yun</b><span>NAVER AI Lab</span></div>
+  </div>
+  <div class="links"><span>arXiv:2601.17668</span><span>janghyun1230.github.io/fastkvzip</span></div>
+</section>
+<section class="slide" data-sec="1 · Selective memory" data-title="Fast KVzip: motivation">
+  <h2 class="st">Fast KVzip – motivation <small>save memory, keep what the future needs</small></h2>
+  <div class="sb" style="top:136px">
+    <svg class="chart" id="ch-fkvwhy" viewBox="0 0 1312 604" role="img" aria-label="Three ways to cut the cost of long contexts, on a toy KV cache of 10 tokens by 4 layers, layer 1 at the bottom. Mixture-of-Depths: a token dropped at an early layer skips all later layers, so FLOPs and the KV cache shrink, but a dropped token has no KV in any later layer, and the later query “When was it completed?” cannot find 1889 above layer 1. Sparse attention (MoBA, DeepSeek Sparse Attention): every KV pair is stored and each query reads only a few, so attention compute drops, but the whole cache stays in memory. Fast KVzip: every token runs through all layers; then a lightweight gate evicts, in each layer, the KV pairs no later query will need, so the cache is small and 1889 is kept where it is needed."></svg>
+  </div>
+  <div class="cite">Illustrative: 10 tokens × 4 layers (layer 1 at the bottom), one cell per KV pair · Mixture-of-Depths (Raposo et al., 2024) · MoBA (NeurIPS’25) · DeepSeek Sparse Attention (DeepSeek-V3.2-Exp, 2025)</div>
+</section>
+<section class="slide" data-sec="1 · Selective memory" data-title="Fast KVzip: gated KV eviction">
+  <h2 class="st">Fast KVzip – gated KV eviction</h2>
+  <div class="sb" style="top:136px">
+    <p class="lead">Compute the importance score of KV caches <span class="red">in runtime</span> using “<i class="u">gate modules</i>”</p>
+    <p class="lead" style="margin-top:14px">A gate looks at the hidden state, and predicts if it will be useful <i class="u">in the future</i></p>
+    <div style="display:grid;grid-template-columns:600px 1fr;gap:50px;align-items:end;margin-top:30px">
+      <img class="fig" src="img/fkv_gate_left.webp" alt="Hidden states feed both the QKV projection and a gating branch that outputs KV importance scores; given the score, the KV cache entry is stored or evicted." style="width:560px">
+      <figure style="margin:0"><img class="fig" src="img/fkv_gate_right.webp" alt="Gate architecture: the hidden state is projected to a low-rank query and key, normalized, and attends to learnable sink keys per layer; the averaged attention weight gives the score." style="width:560px"><figcaption class="cap" style="text-align:center">Our gate: lightweight, attention-like (low-rank sink attention)</figcaption></figure>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:22px;font-size:23px;color:#444;line-height:1.3">
+      <div class="f"><b style="color:#000">Distilled from KVzip</b><br>Gates learn KVzip’s reconstruction scores; the LLM stays frozen.</div>
+      <div class="f"><b style="color:#000">Cheap to train</b><br>Forward passes only, no backprop through the LLM; under 1 H100 hour.</div>
+      <div class="f"><b style="color:#000">Prefill and decoding</b><br>Scores are ready as each token is written, so eviction happens on the fly.</div>
+    </div>
+  </div>
+</section>
+<section class="slide" data-sec="1 · Selective memory" data-title="Fast KVzip in motion" data-anim="fkvstream" data-skip>
+  <h2 class="st">Fast KVzip in motion <small>score KV pairs as they are written</small></h2>
+  <div class="sb" style="top:136px">
+    <svg class="chart" id="ch-fkvstream" viewBox="0 0 1312 470" role="img" aria-label="Animation: KVzip stores every KV pair during prefill, runs an extra reconstruction pass, then evicts to 30 percent; Fast KVzip gives each chunk a gate score and evicts on the fly, so its KV memory peaks much lower and it finishes without the extra pass"></svg>
+  </div>
+  <div class="cite">Illustrative: 32 tokens in chunks of 4, 30% budget. Decoding works the same way: each new token gets a gate score when it is written.</div>
+  <button class="replay" type="button" data-replay="fkvstream">↻ Replay</button>
+</section>
+<section class="slide" data-sec="1 · Selective memory" data-title="Fast KVzip at 170K tokens">
+  <h2 class="st">Fast KVzip at 170K tokens <small>no reconstruction pass, lower peak memory</small></h2>
+  <div class="sb" style="top:150px">
+    <svg class="chart" id="ch-fkvrace" viewBox="0 0 1312 440" role="img" aria-label="Prefill at 170K tokens: no compression about 48 seconds, KVzip about 150 seconds, Fast KVzip about 25 seconds; peak KV memory about 33, 33 and 12 GB"></svg>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:30px;margin-top:18px">
+      <div class="stat"><div class="n red" style="font-size:38px">≈6×</div><div class="l">faster prefill than KVzip, and faster than no compression</div></div>
+      <div class="stat"><div class="n" style="font-size:38px">≈⅓</div><div class="l">of the peak KV memory: eviction happens during prefill</div></div>
+      <div class="stat"><div class="n" style="font-size:38px">same</div><div class="l">decoding speed as KVzip at a 30% budget</div></div>
+    </div>
+  </div>
+  <div class="cite">Qwen2.5-7B-1M, 30% KV budget, PyTorch + FlashAttention-2, H100 · values read from the paper’s efficiency plot (≈)</div>
+</section>
+<section class="slide" data-sec="1 · Selective memory" data-title="Fast KVzip results">
+  <h2 class="st">Fast KVzip – results <small>near-lossless up to 70% eviction</small></h2>
+  <div class="sb" style="display:grid;grid-template-rows:auto auto;gap:18px;top:132px">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:30px;align-items:end">
+      <figure style="margin:0"><img class="fig" src="img/fkv_perf.webp" alt="RULER-4K accuracy versus KV budget ratio for Fast KVzip, KVzip and KVPress best; and prefill time versus peak KV memory at 170K tokens, where Fast KVzip uses about 12 GB and 25 s versus KVzip at 33 GB and 150 s." style="width:620px"><figcaption class="cap">Performance and prefill cost</figcaption></figure>
+      <figure style="margin:0"><img class="fig" src="img/fkv_infer.webp" alt="Prefill time and decoding time per token versus peak KV memory: Fast KVzip sits at the lowest memory and time." style="width:600px"><figcaption class="cap">Inference efficiency (Qwen2.5-7B-1M, 30% budget, H100)</figcaption></figure>
+    </div>
+    <figure style="margin:0"><img class="fig" src="img/fkv_reason.webp" alt="AIME24 and MATH accuracy for Qwen3-8B and Qwen3-14B versus KV cache budget: Fast KVzip stays closest to the full KV cache, above R-KV, SnapKV and early stopping." style="width:1150px;margin:0 auto"><figcaption class="cap" style="text-align:center">Reasoning tasks: Fast KVzip stays close to the full cache at a 2K–6K token budget</figcaption></figure>
+  </div>
+  <div class="cite">Models: Qwen2.5-1M, Qwen3, Gemma3 · long-context understanding, code comprehension, math reasoning</div>
+</section>
+<section class="slide" data-sec="1 · Selective memory" data-title="KVPress benchmark: full leaderboard" data-anim="kvpressfull">
+  <h2 class="st">KVPress benchmark <small>88% compression · full leaderboard</small></h2>
+  <div class="sb" style="display:grid;grid-template-columns:900px 1fr;gap:40px;align-items:start;top:134px">
+    <svg class="chart" id="ch-kvpressfull" viewBox="0 0 900 616" role="img" aria-label="Score at 88 percent compression: KVzip 92.24 and Fast KVzip 88.78 versus no compression 95.32; the next best method, ExpectedAttention, scores 72.78"></svg>
+    <div class="col" style="gap:26px;padding-top:40px">
+      <div class="stat"><div class="n red">−3.2%</div><div class="l">KVzip vs. no compression, with 88% of the cache removed</div></div>
+      <div class="stat"><div class="n" style="color:#E8794B">−6.9%</div><div class="l">Fast KVzip, single forward pass</div></div>
+      <div class="stat"><div class="n" style="color:#888">−23.6%</div><div class="l">best other method (ExpectedAttention)</div></div>
+      <p class="note">KVzip needs extra forward passes for reconstruction; Fast KVzip removes them.</p>
+    </div>
+  </div>
+  <div class="cite">NVIDIA KVPress leaderboard, snapshot as shown in the July 2026 talk</div>
+  <button class="replay" type="button" data-replay="kvpressfull">↻ Replay</button>
+</section>
+<!-- /SLIDES -->
+</div>
+<script src="common/chapters.js"></script>
+<script src="common/anim.js"></script>
+<script src="common/charts.js"></script>
+<script src="common/kv_anim.js"></script>
+<script src="common/deck.js"></script>
+</body>
+</html>

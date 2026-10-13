@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Closing · Learning What Matters</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="common/deck.css">
+<link rel="stylesheet" href="common/ti.css">
+<link rel="stylesheet" href="common/media.css">
+</head>
+<body>
+<!--
+  Closing
+  Edit the slides between SLIDES and /SLIDES. One <section class="slide"> = one 1440×810 slide.
+    data-title  name in the slide list          class="f"   revealed step by step with →
+    data-anim   animation(s) played on entry     img/        images used by this chapter
+  Shared styles: common/deck.css · charts: common/charts.js · KVzip animations: common/kv_anim.js
+-->
+<div id="stage">
+<!-- SLIDES -->
+<section class="slide" data-sec="Closing" data-title="Takeaway: learning what matters">
+  <h2 class="st">Takeaway: learning what matters</h2>
+  <div class="sb" style="top:140px">
+      <div class="rm">
+      <div class="verb c1" style="grid-column:1">Retain</div><div class="verb c2" style="grid-column:2">Use</div><div class="verb c3" style="grid-column:3">Predict</div>
+      <div class="th mem c1"><b>Selective memory</b><span>Retain useful context</span></div>
+      <div class="th safe c2"><b>Safety-aware learning</b><span>Condition the use of dual-use knowledge</span></div>
+      <div class="th world c3"><b>Predictive world models</b><span>Learn from diverse visual experience and demonstrations</span></div>
+      <div class="pp c1">Keep the KV pairs that <b>reconstruct the context</b>: 3–4× smaller cache, up to 70% evicted near-losslessly<div class="pp-p">KVzip <span class="v">NeurIPS’25</span> · Fast KVzip <span class="v">NeurIPS’26</span></div></div>
+      <div class="pp c2"><b>Mark</b> hazardous knowledge instead of erasing it, and release it only under a condition<div class="pp-p">Mark, Don’t Erase <span class="v">NeurIPS’26</span></div></div>
+      <div class="pp c3"><b>Retrieve</b> real observations, <b>act</b> through language, <b>transfer</b> across demonstrations<div class="pp-p">Seoul World Model <span class="v">ECCV’26</span> · LaLa-World <span class="v">arXiv soon</span> · WATCH <span class="v">arXiv soon</span></div></div>
+      <div class="br" style="grid-column:1"><span>Efficient</span></div><div class="br" style="grid-column:2/4"><span>Reliable</span></div>
+      </div>
+    <div style="margin-top:30px;font-size:27px;line-height:1.5">
+      <div class="f">Scale still matters.</div>
+      <div class="f">What a model <b>retains</b>, <b>uses</b>, and <b>predicts</b> decides how far that scale goes.</div>
+    </div>
+  </div>
+</section>
+
+
+<section class="slide" data-sec="Closing" data-title="Looking ahead: one instruction, four attempts">
+  <h2 class="st">Looking ahead: one instruction, four attempts</h2>
+  <div class="sb" style="top:136px;display:grid;grid-template-columns:900px 1fr;gap:34px;">
+    <div class="deck-media"><video class="deck-video" loop id="astra-painting-video" controls muted playsinline preload="metadata" poster="img/astra-video/poster.webp" src="media/astra-painting.mp4" data-poster-time="66" data-slide-autoplay aria-label="A robot arm paints the Golden Gate Bridge from a reference image. The video labels four attempts; the final shot lays the paintings side by side."></video></div>
+    <div class="col" style="gap:24px;padding-top:6px">
+      <p class="lead" style="font-size:25px"><b>“paint this picture of the golden gate bridge …”</b></p>
+      <p class="lead" style="font-size:25px">Four labeled attempts; the later ones look more like the reference.</p>
+      <div class="f" data-f="1" style="display:grid;gap:16px;border-top:2px solid #E3E3E3;padding-top:18px">
+        <p class="lead" style="font-size:24px"><b>Longer histories:</b> what should each attempt pass on?</p>
+        <p class="lead" style="font-size:24px"><b>New tasks:</b> which skills carry over?</p>
+        <p class="lead" style="font-size:24px"><b>Changing environments:</b> every stroke changes the canvas. What will the next one do?</p>
+      </div>
+    </div>
+  </div>
+  <div class="cite">Video: Astra painting demo, supplied file (68 s; plays muted on entry; playback copy 960×540, 30 fps; the source audio track is silent).</div>
+</section>
+
+<section class="slide" data-sec="Closing" data-title="Research agenda: longer histories, new tasks, changing environments">
+  <h2 class="st">Research agenda</h2>
+  <div class="sb" style="top:146px">
+    <div class="ag">
+      <div class="ag-h"></div><div class="ag-h">Today</div><div></div><div class="ag-h">Next</div>
+      <div class="ag-l"><b>Longer histories</b><span>hours of video, months of agent interaction</span></div>
+      <div class="ag-t">KVzip · Fast KVzip keep what matters <b>within one context</b></div>
+      <div class="ag-ar">→</div>
+      <div class="ag-n f" data-f="1"><b>Decoupled memory and intelligence</b><span>Memory that grows with what matters, not with length</span></div>
+      <div class="ag-l"><b>New tasks</b><span>new behaviors, embodiments and users</span></div>
+      <div class="ag-t">Mark, Don’t Erase <b>conditions</b> knowledge · WATCH <b>transfers</b> interactions · LaLa-World shares one predictor <b>through language</b></div>
+      <div class="ag-ar">→</div>
+      <div class="ag-n f" data-f="1"><b>Predictive and actionable representations</b><span>Adapt by conditioning and retrieval instead of retraining</span></div>
+      <div class="ag-l"><b>Changing environments</b><span>the world moves on after training</span></div>
+      <div class="ag-t">Seoul World Model <b>retrieves</b> real street views to ground what it generates</div>
+      <div class="ag-ar">→</div>
+      <div class="ag-n f" data-f="1"><b>Grounded, updatable world models</b><span>Update the memory, not the weights, as the world changes</span></div>
+    </div>
+    <p class="lead" style="font-size:23px;margin-top:26px">The same question carries forward: <b>what to retain, use, and predict</b> as histories grow, tasks change, and environments move.</p>
+  </div>
+</section>
+
+<section class="slide" data-sec="Closing" data-title="Thanks! Questions?">
+  <h2 class="st">Thanks! Questions?</h2>
+  <div class="sb">
+    <ul class="b"><li><a href="https://sangdooyun.github.io/" target="_blank" rel="noopener">https://sangdooyun.github.io/</a></li></ul>
+  </div>
+  <img src="img/naver_ai.png" alt="NAVER AI" style="position:absolute;left:50%;top:660px;width:400px;transform:translateX(-50%)">
+</section>
+<!-- /SLIDES -->
+</div>
+<script src="common/chapters.js"></script>
+<script src="common/anim.js"></script>
+<script src="common/charts.js"></script>
+<script src="common/kv_anim.js"></script>
+<script src="common/media.js"></script>
+<script src="common/deck.js"></script>
+</body>
+</html>

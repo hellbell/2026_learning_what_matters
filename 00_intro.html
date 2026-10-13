@@ -1,0 +1,464 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Intro · Learning What Matters</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="common/deck.css">
+<link rel="stylesheet" href="common/ti.css">
+</head>
+<body>
+<!--
+  Intro
+  Edit the slides between SLIDES and /SLIDES. One <section class="slide"> = one 1440×810 slide.
+    data-title  name in the slide list          class="f"   revealed step by step with →
+    data-anim   animation(s) played on entry     img/        images used by this chapter
+  Shared styles: common/deck.css · charts: common/charts.js · KVzip animations: common/kv_anim.js
+-->
+<div id="stage">
+<!-- SLIDES -->
+<section class="slide cover" data-sec="Intro" data-title="Learning What Matters: Efficient and Reliable Multimodal Intelligence">
+  <h1 class="cv-title">Learning What Matters:<br>Efficient and Reliable Multimodal Intelligence</h1>
+  <p class="cv-sub">Selective memory · adaptive inference · safety-aware learning · predictive world models</p>
+  <div class="cv-strip" aria-hidden="true"><i style="background:var(--s-memory-e)"></i><i style="background:var(--s-purple-e)"></i><i style="background:var(--s-weights-e)"></i><i style="background:var(--s-world-e)"></i></div>
+  <p class="cv-name"><b>Sangdoo Yun</b> @ NAVER AI Lab</p>
+  <a class="cv-link" href="https://sangdooyun.github.io/" target="_blank" rel="noopener">https://sangdooyun.github.io/</a>
+  <img class="cv-logo" src="img/naver_ai.png" alt="NAVER AI">
+</section>
+
+<section class="slide" data-sec="Intro" data-title="About me">
+  <h2 class="st">About me</h2>
+  <div class="bu">
+    <p style="left:74px;top:158px;font-size:35px;line-height:67px;color:var(--s-gray)">~2010: B.S. @ SNU<br>~2017: Ph.D. @ SNU<br>~2022: Researcher @ NAVER AI Lab</p>
+    <div class="stat" style="left:746px;top:44px"><div class="n" style="font-size:60px">&gt;25k<small>citations</small></div><div class="l">Google Scholar, Oct 2026</div></div>
+    <p class="note" style="left:746px;top:162px;font-size:16px">Citations per year</p>
+    <img src="img/me_scholar.webp" alt="Google Scholar citations per year, 2018–2025" style="left:746px;top:186px;width:342px">
+    <img src="img/me_photo.webp" alt="Sangdoo Yun" style="left:1128px;top:92px;width:282px;height:282px;border-radius:50%">
+    <p style="left:64px;top:412px;font-size:35px;line-height:56px">Now:<br>– <b>Research Director</b> @ NAVER AI Lab<br>– <b>Adjunct Professor</b> @ SNU AI Inst.<br>– <b>Adjunct Professor</b> @ POSTECH GSAI</p>
+    <img src="img/naver_ai.png" alt="NAVER AI" style="left:742px;top:473px;width:240px">
+    <img src="img/snu_logo.webp" alt="Seoul National University" style="left:742px;top:526px;width:50px">
+    <img src="img/postech_logo.png" alt="POSTECH" style="left:742px;top:599px;width:220px">
+    <a href="https://sangdooyun.github.io/" target="_blank" rel="noopener" style="left:64px;top:690px;font-size:30px">https://sangdooyun.github.io/</a>
+  </div>
+</section>
+
+<section class="slide" data-sec="Intro" data-title="NAVER AI: towards advanced and open research">
+  <h2 class="st">NAVER AI – towards advanced and open research</h2>
+  <div class="sb">
+    <ul class="b" style="font-size:30px">
+      <li>Publications @ top AI conferences of NAVER AI
+        <ul style="font-size:28px;gap:6px;margin-top:10px">
+          <li><b>NeurIPS, ICML, ICLR, CVPR, ICCV, ACL, EMNLP, AAAI, …</b></li>
+          <li><b>&gt;130 papers</b> in the past 3 years</li>
+          <li><b>&gt;90 h-index</b>, <b>&gt;60k citations</b> (Google Scholar)</li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+  <div class="bu">
+    <p class="bu-cap" style="left:52px;top:384px;width:290px"><b>Workshop Organization</b><br>ImageNet PPF WS<br>@ <b>NeurIPS 2021</b></p>
+    <img src="img/naver_ws_ppf.webp" alt="ImageNet PPF workshop speakers" style="left:72px;top:484px;width:250px">
+    <p class="bu-cap" style="left:384px;top:384px;width:290px"><b>Workshop Organization</b><br>Video-LM WS<br>@ <b>NeurIPS 2024</b></p>
+    <img src="img/naver_ws_vlm.webp" alt="Workshop on Video-Language Models speakers" style="left:404px;top:484px;width:250px">
+    <p class="bu-cap" style="left:756px;top:410px;width:640px"><b>Global collaborations</b></p>
+    <img src="img/naver_collab.webp" alt="Map of NAVER AI collaborations across Europe, Asia, and America" style="left:756px;top:446px;width:640px">
+  </div>
+</section>
+
+<section class="slide" data-sec="Intro" data-title="NAVER AI: the research engine">
+  <h2 class="st">NAVER AI – The Research Engine</h2>
+  <div class="bu">
+    <p style="left:64px;top:158px;font-size:32px;color:var(--s-gray)">From Research to Innovation</p>
+    <div class="bu-box" style="left:72px;top:256px;width:312px;background:#A4C2F4">Fundamental<br>Research</div>
+    <div class="bu-ar" style="left:385px;top:340px;width:128px"></div>
+    <div class="bu-box" style="left:518px;top:256px;width:348px;background:#B6D7A8">Innovation in<br>NAVER’s products</div>
+    <ul class="b" style="left:72px;top:458px;font-size:26px;gap:2px;color:#000">
+      <li>Backbone research</li><li>Multimodal research</li><li>Vision generation</li><li>HCI research</li><li>Trustworthy AI</li>
+    </ul>
+    <ul class="b" style="left:504px;top:458px;font-size:26px;gap:2px;color:#000">
+      <li>Foundation model</li><li>Service-optimized efficient AI</li><li>Multimodal content generation</li><li>Safe and sustainable AI</li>
+    </ul>
+    <img src="img/naver_face.webp" alt="Face recognition gates" style="left:934px;top:56px;width:272px;height:170px;object-fit:cover">
+    <p class="bu-cap" style="left:934px;top:231px;width:272px">* Face Recognition</p>
+    <img src="img/naver_ocr.webp" alt="A menu board read by visual text understanding" style="left:934px;top:278px;width:272px;height:145px;object-fit:cover">
+    <p class="bu-cap" style="left:910px;top:428px;width:320px">* Visual Text Understanding</p>
+    <img src="img/naver_hcx.webp" alt="HyperCLOVA X" style="left:934px;top:475px;width:272px;height:155px;object-fit:cover">
+    <p class="bu-cap" style="left:934px;top:635px;width:272px">* Large Language Model</p>
+    <img src="img/naver_agent.webp" alt="NAVER app with an AI agent button" style="left:1226px;top:150px;width:186px;box-shadow:0 0 0 1px #DDD">
+    <p class="bu-cap" style="left:1194px;top:536px;width:250px">* AI-native agent</p>
+  </div>
+</section>
+
+<section class="slide" data-sec="Intro" data-title="One question: what to retain, use, and predict">
+  <h2 class="st">A talk about one question</h2>
+  <div class="sb" style="display:grid;grid-template-rows:auto 1fr;gap:34px">
+    <p class="qq">What information should a model <b class="k1">retain</b>, <b class="k2">use</b>, and <b class="k3">predict</b> to support its intended behavior?</p>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:34px;align-self:start;padding:0 20px">
+      <div class="f qc" style="border-color:var(--s-memory-e);background:var(--s-memory)">
+        <div class="qv">Retain</div><div class="qd">What context to keep in memory</div>
+        <div class="qe">Long contexts fill the KV cache. Which entries will future queries need?</div><div class="qp">Selective memory<br>KVzip · Fast KVzip</div>
+      </div>
+      <div class="f qc" style="border-color:var(--s-weights-e);background:var(--s-weights)">
+        <div class="qv">Use</div><div class="qd">When to use knowledge</div>
+        <div class="qe">Dual-use knowledge can help or harm. Use it only under the right condition.</div><div class="qp">Safety-aware learning<br>Mark, Don’t Erase</div>
+      </div>
+      <div class="f qc" style="border-color:var(--s-world-e);background:var(--s-world)">
+        <div class="qv">Predict</div><div class="qd">What future to anticipate</div>
+        <div class="qe">Learn how the world changes under actions from diverse visual experience and demonstrations.</div><div class="qp">Predictive world models<br>Seoul World Model · LaLa-World · WATCH</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-sec="Intro" data-title="Data and compute scaling (2010s)">
+  <h2 class="st">Data and compute scaling (2010’s)</h2>
+  <div class="bu">
+    <p style="left:64px;top:164px;font-size:31px;color:var(--s-gray)">Scale is All You Need?</p>
+    <ul class="b" style="left:64px;top:232px;font-size:31px;gap:22px">
+      <li>More parameters: AlexNet, ResNet, …</li>
+      <li>More data: ImageNet, LAION, …</li>
+    </ul>
+    <img src="img/bu_alexnet.webp" alt="AlexNet architecture" style="left:84px;top:392px;width:638px">
+    <img src="img/bu_resnet.webp" alt="VGG-19, 34-layer plain and 34-layer residual networks" style="left:770px;top:180px;width:232px">
+    <img src="img/bu_imagenet.webp" alt="ImageNet" style="left:1041px;top:214px;width:350px">
+    <img src="img/bu_laion.webp" alt="LAION" style="left:1042px;top:446px;width:349px">
+  </div>
+</section>
+
+<section class="slide" data-sec="Intro" data-title="Data and computation scaling: annotators → dataset → model">
+  <h2 class="st">Data and computation scaling</h2>
+  <div class="bu">
+    <svg viewBox="0 0 1440 810" aria-hidden="true">
+      <defs><marker id="bu-ah-sup" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="16" markerHeight="16" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0L10 5L0 10z" fill="#595959"/></marker></defs>
+      <line x1="652" y1="505" x2="524" y2="322" stroke="#595959" stroke-width="2.5" marker-end="url(#bu-ah-sup)"/>
+      <line x1="782" y1="510" x2="916" y2="324" stroke="#595959" stroke-width="2.5" marker-end="url(#bu-ah-sup)"/>
+    </svg>
+    <div class="bu-l" style="left:178px;top:152px">Annotators</div>
+    <img src="img/icon_crowd.webp" alt="" style="left:218px;top:232px;width:160px">
+    <div class="bu-l" style="left:383px;top:236px">Labeling</div>
+    <div class="bu-ar" style="left:408px;top:300px;width:184px"></div>
+    <div class="bu-l" style="left:598px;top:152px">Dataset</div>
+    <img src="img/icon_db.webp" alt="" style="left:643px;top:212px;width:152px">
+    <div class="bu-l" style="left:807px;top:236px">Training</div>
+    <div class="bu-ar" style="left:835px;top:300px;width:184px"></div>
+    <div class="bu-l" style="left:1012px;top:152px">ML Model</div>
+    <img src="img/icon_nn.svg" alt="" style="left:1068px;top:220px;width:128px">
+    <img src="img/icon_researcher.webp" alt="" style="left:620px;top:508px;width:182px">
+    <div class="bu-l" style="left:823px;top:594px;line-height:1.3">ML Engineer/<br>Researcher</div>
+    <p class="bu-ann" style="left:215px;top:410px;width:400px"><b style="color:#4A86E8">What knowledge</b> to<br>extract from humans? – <b style="color:#4A86E8">Data</b></p>
+    <p class="bu-ann" style="left:817px;top:418px;width:400px"><b>How to teach</b> models<br>given data? – <b style="color:#05A89D">Supervision</b></p>
+  </div>
+</section>
+
+<section class="slide" data-sec="Intro" data-title="Efficient and reliable scaling: CutMix, Hmix &amp; Gmix">
+  <h2 class="st">Efficient and reliable scaling</h2>
+  <div class="bu">
+    <svg viewBox="0 0 1440 810" aria-hidden="true"><path d="M798 412H1129A16 16 0 0 1 1145 428V484A16 16 0 0 1 1129 500H882L818 547L846 500H798A16 16 0 0 1 782 484V428A16 16 0 0 1 798 412Z" fill="#EEE" stroke="#595959" stroke-width="2"/></svg>
+    <div class="bu-l" style="left:178px;top:152px">Annotators</div>
+    <img src="img/icon_crowd.webp" alt="" style="left:218px;top:232px;width:160px">
+    <div class="bu-l" style="left:383px;top:236px">Labeling</div>
+    <div class="bu-ar" style="left:408px;top:300px;width:184px"></div>
+    <div class="bu-l" style="left:598px;top:152px">Dataset</div>
+    <img src="img/icon_db.webp" alt="" style="left:643px;top:212px;width:152px">
+    <div class="bu-l" style="left:807px;top:236px">Training</div>
+    <div class="bu-ar" style="left:835px;top:300px;width:184px"></div>
+    <div class="bu-l" style="left:1012px;top:152px">ML Model</div>
+    <img src="img/icon_nn.svg" alt="" style="left:1068px;top:220px;width:128px">
+    <img src="img/icon_researcher.webp" alt="" style="left:620px;top:508px;width:182px">
+    <div class="bu-l" style="left:823px;top:594px;line-height:1.3">ML Engineer/<br>Researcher</div>
+    <p class="bu-bub" style="left:782px;top:412px;width:363px;height:88px"><span>Data Augmentation 😃</span></p>
+    <div class="bu-pn" style="left:60px;top:388px;width:240px"><img src="img/naver_ai.png" alt="NAVER AI">CutMix (ICCV’19)</div>
+    <img src="img/cutmix.webp" alt="CutMix: a patch of a cat image pasted into a dog image, labeled Dog 0.6 / Cat 0.4" style="left:104px;top:474px;width:153px">
+    <div class="bu-pn" style="left:295px;top:388px;width:240px"><img src="img/naver_ai.png" alt="NAVER AI">Hmix &amp; Gmix<br>(NeurIPS’22)</div>
+    <img src="img/hmix_gmix.webp" alt="Hmix and Gmix mixing masks" style="left:322px;top:506px;width:186px">
+  </div>
+  <div class="cite"><b>Yun et al.</b>, “CutMix: Regularization Strategy to Train Strong Classifiers with Localizable Features”, <b>ICCV 2019 Oral</b>.<br>Park*, <b>Yun*</b>, and Chun, “A Unified Analysis of Mixed Sample Data Augmentation: A Loss Function Perspective”, <b>NeurIPS 2022</b>.</div>
+</section>
+
+<section class="slide" data-sec="Intro" data-title="Efficient and reliable scaling: CMO">
+  <h2 class="st">Efficient and reliable scaling</h2>
+  <div class="bu">
+    <svg viewBox="0 0 1440 810" aria-hidden="true"><path d="M798 412H1129A16 16 0 0 1 1145 428V484A16 16 0 0 1 1129 500H882L818 547L846 500H798A16 16 0 0 1 782 484V428A16 16 0 0 1 798 412Z" fill="#EEE" stroke="#595959" stroke-width="2"/></svg>
+    <div class="bu-l" style="left:178px;top:152px">Annotators</div>
+    <img src="img/icon_crowd.webp" alt="" style="left:218px;top:232px;width:160px">
+    <div class="bu-l" style="left:383px;top:236px">Labeling</div>
+    <div class="bu-ar" style="left:408px;top:300px;width:184px"></div>
+    <div class="bu-l" style="left:598px;top:152px">Dataset</div>
+    <img src="img/icon_db.webp" alt="" style="left:643px;top:212px;width:152px">
+    <div class="bu-l" style="left:807px;top:236px">Training</div>
+    <div class="bu-ar" style="left:835px;top:300px;width:184px"></div>
+    <div class="bu-l" style="left:1012px;top:152px">ML Model</div>
+    <img src="img/icon_nn.svg" alt="" style="left:1068px;top:220px;width:128px">
+    <img src="img/icon_researcher.webp" alt="" style="left:620px;top:508px;width:182px">
+    <div class="bu-l" style="left:823px;top:594px;line-height:1.3">ML Engineer/<br>Researcher</div>
+    <p class="bu-bub" style="left:782px;top:412px;width:363px;height:88px"><span>Data Augmentation 😃</span></p>
+    <div class="bu-pn" style="left:317px;top:388px;width:240px"><img src="img/naver_ai.png" alt="NAVER AI">CMO (CVPR’22)</div>
+    <img src="img/cmo_plot.webp" alt="Context-rich vs. random oversampling on a long-tailed class distribution" style="left:16px;top:502px;width:250px">
+    <img src="img/cmo_grid.webp" alt="CMO samples: minority-class objects pasted onto majority-class backgrounds" style="left:286px;top:484px;width:294px">
+  </div>
+  <div class="cite">Seulki Park, Youngkyu Hong, Byeongho Heo, <b>Sangdoo Yun</b>, Jin Young Choi, “The Majority Can Help The Minority: Context-rich Minority Oversampling for Long-tailed Classification”, <b>CVPR 2022</b>.</div>
+</section>
+
+<section class="slide" data-sec="Intro" data-title="Efficient and reliable scaling: ReLabel">
+  <h2 class="st">Efficient and reliable scaling</h2>
+  <div class="bu">
+    <svg viewBox="0 0 1440 810" aria-hidden="true"><path d="M798 412H1164A16 16 0 0 1 1180 428V484A16 16 0 0 1 1164 500H882L818 547L846 500H798A16 16 0 0 1 782 484V428A16 16 0 0 1 798 412Z" fill="#EEE" stroke="#595959" stroke-width="2"/></svg>
+    <div class="bu-l" style="left:178px;top:152px">Annotators</div>
+    <img src="img/icon_crowd.webp" alt="" style="left:218px;top:232px;width:160px">
+    <div class="bu-l" style="left:383px;top:236px">Labeling</div>
+    <div class="bu-ar" style="left:408px;top:300px;width:184px"></div>
+    <div class="bu-l" style="left:598px;top:152px">Dataset</div>
+    <img src="img/icon_db.webp" alt="" style="left:643px;top:212px;width:152px">
+    <img src="img/icon_tools.webp" alt="" style="left:612px;top:308px;width:100px">
+    <div class="bu-l" style="left:807px;top:236px">Training</div>
+    <div class="bu-ar" style="left:835px;top:300px;width:184px"></div>
+    <div class="bu-l" style="left:1012px;top:152px">ML Model</div>
+    <img src="img/icon_nn.svg" alt="" style="left:1068px;top:220px;width:128px">
+    <img src="img/icon_researcher.webp" alt="" style="left:620px;top:508px;width:182px">
+    <div class="bu-l" style="left:823px;top:594px;line-height:1.3">ML Engineer/<br>Researcher</div>
+    <p class="bu-bub" style="left:782px;top:412px;width:398px;height:88px"><span>Refining Training dataset 😃</span></p>
+    <div class="bu-pr" style="left:50px;top:390px"><img src="img/naver_ai.png" alt="NAVER AI">ReLabel (CVPR’21)</div>
+    <img src="img/relabel.webp" alt="ReLabel: single global ImageNet labels vs. multi-label, localized label maps" style="left:145px;top:432px;width:356px">
+  </div>
+  <div class="cite"><b>Yun et al.</b>, “Re-labeling ImageNet: from Single to Multi-Labels, from Global to Localized Labels”, <b>CVPR 2021</b>.</div>
+</section>
+
+<section class="slide" data-sec="Intro" data-title="Efficient and reliable scaling: LUAB">
+  <h2 class="st">Efficient and reliable scaling</h2>
+  <div class="bu">
+    <svg viewBox="0 0 1440 810" aria-hidden="true">
+      <defs><marker id="bu-ah-luab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="16" markerHeight="16" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0L10 5L0 10z" fill="#4285F4"/></marker></defs>
+      <line x1="418" y1="332" x2="593" y2="414" stroke="#4285F4" stroke-width="2.5" stroke-dasharray="10 8" marker-end="url(#bu-ah-luab)"/>
+      <line x1="826" y1="425" x2="1013" y2="343" stroke="#4285F4" stroke-width="2.5" stroke-dasharray="10 8" marker-end="url(#bu-ah-luab)"/>
+      <path d="M900 442H1269A16 16 0 0 1 1285 458V517A16 16 0 0 1 1269 533H982L915 570L946 533H900A16 16 0 0 1 884 517V458A16 16 0 0 1 900 442Z" fill="#EEE" stroke="#595959" stroke-width="2"/>
+    </svg>
+    <div class="bu-l" style="left:178px;top:152px">Annotators</div>
+    <img src="img/icon_crowd.webp" alt="" style="left:218px;top:232px;width:160px">
+    <div class="bu-l" style="left:383px;top:236px">Labeling</div>
+    <div class="bu-ar" style="left:408px;top:300px;width:184px"></div>
+    <div class="bu-l" style="left:598px;top:152px">Dataset</div>
+    <img src="img/icon_db.webp" alt="" style="left:643px;top:212px;width:152px">
+    <div class="bu-l" style="left:807px;top:236px">Training</div>
+    <div class="bu-ar" style="left:835px;top:300px;width:184px"></div>
+    <div class="bu-l" style="left:1012px;top:152px">ML Model</div>
+    <img src="img/icon_nn.svg" alt="" style="left:1068px;top:220px;width:128px">
+    <img src="img/luab_scribble.webp" alt="" style="left:642px;top:410px;width:133px">
+    <img src="img/icon_researcher.webp" alt="" style="left:620px;top:508px;width:182px">
+    <div class="bu-l" style="left:823px;top:594px;line-height:1.3">ML Engineer/<br>Researcher</div>
+    <p class="bu-bub" style="left:884px;top:442px;width:401px;height:91px"><span>Let’s use annotation<br>byproducts 😃</span></p>
+    <div class="bu-pr" style="left:30px;top:408px"><img src="img/naver_ai.png" alt="NAVER AI">LUAB (ICCV’23)</div>
+    <img src="img/luab.webp" alt="LUAB: the mouse trajectory and click an annotator leaves while labeling a Border Collie" style="left:106px;top:456px;width:392px">
+  </div>
+  <div class="cite">Han et al., “Neglected Free Lunch – Learning Image Classifiers Using Annotation Byproducts”, ICCV 2023.</div>
+</section>
+
+<section class="slide" data-sec="Intro" data-title="Efficient and reliable scaling: ReXNet">
+  <img src="img/rexnet.webp" alt="ImageNet leaderboard row for ReXNet-1.0 and an accuracy-vs-speed plot with ReXNet-1.0x on the efficiency frontier" style="position:absolute;left:0;top:0;width:1440px">
+  <h2 class="st">Efficient and reliable scaling</h2>
+  <div class="cite">Han et al., “Rethinking channel dimensions for efficient model design”, CVPR 2021.</div>
+</section>
+
+<section class="slide" data-sec="Intro" data-title="Transformers era (2017~)">
+  <h2 class="st">Transformers era (2017~)</h2>
+  <div class="bu">
+    <ul class="b" style="left:64px;top:166px;font-size:32px;gap:16px">
+      <li>Accelerating the speed of scaling</li>
+      <li>BERT, GPT, Llama, …</li>
+    </ul>
+    <p style="left:452px;top:262px;width:430px;text-align:right;font-size:26px">Scaling-up model more and more</p>
+    <img src="img/llm_scaling.webp" alt="LLM releases vs. MMLU score: models keep growing from GPT-3 to GPT-4, Claude 3, Llama 3 and o1" style="left:52px;top:300px;width:830px">
+    <p style="left:52px;top:729px;width:830px;text-align:center;font-size:14px;color:#555">https://labelyourdata.com/articles/llm-fine-tuning/llm-model-size</p>
+    <img src="img/vit.webp" alt="Vision Transformer (ViT)" style="left:1008px;top:30px;width:352px">
+    <img src="img/transformer.webp" alt="Transformer architecture" style="left:1014px;top:312px;width:320px">
+  </div>
+  <div class="cite">Attention Is All You Need, 2017<br>An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale, 2020</div>
+</section>
+
+<section class="slide" data-sec="Intro" data-title="Efficient and reliable scaling in the Transformers era: PiT, ViT-RoPE">
+  <h2 class="st">Efficient and reliable scaling in <i>Transformers</i> era</h2>
+  <div class="bu">
+    <div class="bu-pn" style="left:134px;top:156px;width:240px"><img src="img/naver_ai.png" alt="NAVER AI">PiT (ICCV’21)</div>
+    <img src="img/pit_pooling.webp" alt="PiT: pooling layers shrink the spatial tokens from 27×27 to 14×14 to 7×7" style="left:76px;top:232px;width:291px">
+    <img src="img/vit_encoder.webp" alt="Vision Transformer with the Transformer encoder highlighted" style="left:436px;top:246px;width:436px">
+    <p style="left:887px;top:300px;width:140px;text-align:center;font-size:27px;font-weight:700;line-height:1.12;color:#E06666">Position Encoding</p>
+    <div class="bu-pn" style="left:1099px;top:156px;width:240px"><img src="img/naver_ai.png" alt="NAVER AI">ViT-RoPE (ECCV’24)</div>
+    <img src="img/rope_freq.webp" alt="RoPE for ViT: axial and mixed frequencies" style="left:1043px;top:272px;width:368px">
+    <img src="img/rope_res.webp" alt="RoPE-Mixed keeps improving accuracy as the input resolution changes" style="left:1012px;top:408px;width:404px">
+    <svg viewBox="0 0 1440 810" aria-hidden="true">
+      <defs><marker id="bu-ah-vit" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="18" markerHeight="18" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0L10 5L0 10z" fill="#EB220C"/></marker></defs>
+      <line x1="370" y1="383" x2="498" y2="383" stroke="#EB220C" stroke-width="3" stroke-dasharray="12 9" marker-end="url(#bu-ah-vit)"/>
+      <line x1="1000" y1="383" x2="887" y2="383" stroke="#EB220C" stroke-width="3" stroke-dasharray="12 9" marker-end="url(#bu-ah-vit)"/>
+    </svg>
+  </div>
+  <div class="cite">Byeongho Heo, <b>Sangdoo Yun</b>, Dongyoon Han, Sanghyuk Chun, Junsuk Choe, Seong Joon Oh, “Rethinking Spatial Dimensions of Vision Transformers”, ICCV 2021.<br>Byeongho Heo, Song Park, Dongyoon Han, <b>Sangdoo Yun</b>, “Rotary Position Embedding for Vision Transformer”, ECCV 2024.</div>
+</section>
+
+<section class="slide" data-sec="Intro" data-title="Efficient and reliable multi-modal scaling">
+  <h2 class="st">Efficient and reliable <i>multi-modal scaling</i></h2>
+  <div class="bu">
+    <div class="bu-l" style="left:3px;top:276px;line-height:1.25">Web data<br>(Multimodal)</div>
+    <img src="img/icon_globe.webp" alt="" style="left:238px;top:228px;width:164px">
+    <div class="bu-ar" style="left:425px;top:316px;width:180px"></div>
+    <div class="bu-l" style="left:598px;top:166px">Dataset</div>
+    <img src="img/icon_db.webp" alt="" style="left:643px;top:228px;width:152px">
+    <div class="bu-l" style="left:807px;top:250px">Training</div>
+    <div class="bu-ar" style="left:835px;top:316px;width:184px"></div>
+    <div class="bu-l" style="left:1012px;top:166px">ML Model</div>
+    <img src="img/icon_nn.svg" alt="" style="left:1068px;top:236px;width:128px">
+    <img src="img/cloud.webp" alt="" style="left:336px;top:397px;width:356px">
+    <p class="bu-bub" style="left:387px;top:455px;width:260px"><span>Image-text <b><i style="color:#F00">noisy</i></b><br>correspondence</span></p>
+    <img src="img/icon_researcher.webp" alt="" style="left:152px;top:490px;width:184px">
+  </div>
+</section>
+
+<section class="slide" data-sec="Intro" data-title="Multi-modal scaling: ProLIP">
+  <h2 class="st">Efficient and reliable <i>multi-modal scaling</i></h2>
+  <div class="bu">
+    <div class="bu-l" style="left:3px;top:276px;line-height:1.25">Web data<br>(Multimodal)</div>
+    <img src="img/icon_globe.webp" alt="" style="left:238px;top:228px;width:164px">
+    <div class="bu-ar" style="left:425px;top:316px;width:180px"></div>
+    <div class="bu-l" style="left:598px;top:166px">Dataset</div>
+    <img src="img/icon_db.webp" alt="" style="left:643px;top:228px;width:152px">
+    <div class="bu-l" style="left:807px;top:250px">Training</div>
+    <div class="bu-ar" style="left:835px;top:316px;width:184px"></div>
+    <div class="bu-l" style="left:1012px;top:166px">ML Model</div>
+    <img src="img/icon_nn.svg" alt="" style="left:1068px;top:236px;width:128px">
+    <img src="img/cloud.webp" alt="" style="left:336px;top:397px;width:356px">
+    <p class="bu-bub" style="left:387px;top:455px;width:260px"><span>Image-text <b><i style="color:#F00">noisy</i></b><br>correspondence</span></p>
+    <img src="img/icon_researcher.webp" alt="" style="left:152px;top:490px;width:184px">
+    <div class="bu-pr" style="left:926px;top:434px">ProLIP (ICLR’25)<img src="img/naver_ai.png" alt="NAVER AI"></div>
+    <img src="img/prolip.webp" alt="ProLIP: probabilistic visual and textual encoders trained with probabilistic contrastive and inclusion losses" style="left:828px;top:470px;width:600px">
+  </div>
+  <div class="cite">Sanghyuk Chun, Wonjae Kim, Song Park, <b>Sangdoo Yun</b>, “Probabilistic Language-Image Pre-Training”, ICLR 2025</div>
+</section>
+
+<section class="slide" data-sec="Intro" data-title="Multi-modal scaling: HYPE">
+  <h2 class="st">Efficient and reliable <i>multi-modal scaling</i></h2>
+  <div class="bu">
+    <svg viewBox="0 0 1440 810" aria-hidden="true">
+      <defs><marker id="bu-ah-hype" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="18" markerHeight="18" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0L10 5L0 10z" fill="#E06666"/></marker></defs>
+      <path d="M815 362C842 396 838 456 796 461C770 464 750 450 739 431" fill="none" stroke="#E06666" stroke-width="3" marker-end="url(#bu-ah-hype)"/>
+    </svg>
+    <div class="bu-l" style="left:3px;top:276px;line-height:1.25">Web data<br>(Multimodal)</div>
+    <img src="img/icon_globe.webp" alt="" style="left:238px;top:228px;width:164px">
+    <div class="bu-ar" style="left:425px;top:316px;width:180px"></div>
+    <div class="bu-l" style="left:598px;top:166px">Dataset</div>
+    <img src="img/icon_db.webp" alt="" style="left:643px;top:228px;width:152px">
+    <div class="bu-l" style="left:807px;top:250px">Training</div>
+    <div class="bu-ar" style="left:835px;top:316px;width:184px"></div>
+    <div class="bu-l" style="left:1012px;top:166px">ML Model</div>
+    <img src="img/icon_nn.svg" alt="" style="left:1068px;top:236px;width:128px">
+    <img src="img/cloud.webp" alt="" style="left:336px;top:397px;width:356px">
+    <p class="bu-bub" style="left:387px;top:455px;width:260px"><span>Image-text <b><i style="color:#F00">noisy</i></b><br>correspondence</span></p>
+    <img src="img/icon_researcher.webp" alt="" style="left:152px;top:490px;width:184px">
+    <div class="bu-pr" style="left:1050px;top:430px">HYPE (ECCV’24)<img src="img/naver_ai.png" alt="NAVER AI"></div>
+    <img src="img/hype.webp" alt="HYPE: image and text embeddings in Euclidean space vs. hyperbolic space" style="left:830px;top:466px;width:596px">
+  </div>
+  <div class="cite">Wonjae Kim, Sanghyuk Chun, Taekyung Kim, Dongyoon Han, <b>Sangdoo Yun</b>, “HYPE: Hyperbolic Entailment Filtering for Underspecified Images and Texts”, ECCV 2024</div>
+</section>
+
+<section class="slide" data-sec="Intro" data-title="Test-time scaling">
+  <h2 class="st">Test-time scaling</h2>
+  <div class="sb"><ul class="b"><li>Reasoning models: clear trend with increased test-time computation</li></ul></div>
+  <div class="bu">
+    <img src="img/o1_ttc.webp" alt="o1 AIME accuracy rises with log-scale test-time compute" style="left:172px;top:262px;width:356px">
+    <p class="bu-cap" style="left:150px;top:656px;width:400px;font-size:18px">OpenAI o1 blog</p>
+    <img src="img/r1_length.webp" alt="DeepSeek-R1-Zero average response length grows during RL training" style="left:610px;top:229px;width:660px">
+    <p class="bu-cap" style="left:590px;top:656px;width:700px;font-size:18px">DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning</p>
+  </div>
+</section>
+
+<section class="slide" data-sec="Intro" data-title="We are heading to agentic AI">
+  <h2 class="st">We are heading to Agentic AI</h2>
+  <div class="bu">
+    <p class="bu-cap" style="left:30px;top:204px;width:700px;font-size:26px;color:var(--s-gray)">Coding agents (Cursor, Claude Code, …)</p>
+    <img src="img/agent_tweets.webp" alt="Posts by Andrej Karpathy on vibe coding and by Boris Cherny: “It was pretty much all Claude Code”" style="left:18px;top:252px;width:768px">
+    <p class="bu-cap" style="left:806px;top:16px;width:630px;font-size:26px;color:var(--s-gray)">AI Co-scientist</p>
+    <img src="img/ai_coscientist.webp" alt="The AI co-scientist multi-agent system design" style="left:806px;top:58px;width:630px">
+    <p class="bu-cap" style="left:998px;top:410px;width:300px;font-size:26px;color:var(--s-gray)">Robot agents</p>
+    <img src="img/robot_agents.webp" alt="Humanoid robots doing household and assembly tasks" style="left:998px;top:450px;width:300px">
+  </div>
+</section>
+
+<section class="slide" data-sec="Intro" data-title="So, are we done with scaling AI?">
+  <h2 class="st">So, are we done with scaling AI?</h2>
+  <div class="sb" style="display:grid;grid-template-columns:600px 1fr;gap:56px;align-items:start">
+    <figure style="margin:0">
+      <img class="fig" src="img/ilya_neurips24.webp" alt="Ilya Sutskever on stage at NeurIPS 2024 with his slide “Pre-training as we know it will end”: compute is growing, data is not growing, we have but one internet, the fossil fuel of AI" style="width:600px;border-radius:6px">
+      <figcaption class="cap">Ilya Sutskever · NeurIPS 2024 Test-of-Time award talk</figcaption>
+    </figure>
+    <ul class="b">
+      <li>The end of the brute-scaling era</li>
+      <li>We need:
+        <ul>
+          <li><b>Multi-modality</b> to understand the world</li>
+          <li><b>Efficient long-context</b> inference</li>
+          <li><b>Safety and robustness</b></li>
+        </ul>
+      </li>
+      <li>What a model learns, remembers, and computes <b>still matters</b></li>
+    </ul>
+  </div>
+</section>
+<section class="slide" data-sec="Intro" data-title="Bottleneck shifts: compute → memory">
+  <h2 class="st">Bottleneck shifts: compute → memory</h2>
+  <div class="sb">
+    <div style="display:grid;grid-template-columns:1fr 60px 1fr 60px 1fr;align-items:center;padding:6px 40px 0">
+      <div style="background:#EDEDED;border:1.5px solid #8a8a8a;border-radius:18px;height:150px;display:grid;place-items:center;font-size:32px;font-weight:700">Pre-training</div>
+      <div class="lc" style="display:block"><div class="ar" style="margin:0"></div></div>
+      <div style="background:var(--s-memory);border:1.5px solid #6a8fd0;border-radius:18px;height:150px;display:grid;place-content:center;text-align:center;font-size:32px;font-weight:700">Post-training<span style="font-size:23px;font-weight:400">(SFT, RL)</span></div>
+      <div class="lc" style="display:block"><div class="ar" style="margin:0"></div></div>
+      <div style="background:#F4CCCC;border:1.5px solid #c27b7b;border-radius:18px;height:150px;display:grid;place-content:center;text-align:center;font-size:32px;font-weight:700">Inference<span style="font-size:23px;font-weight:400">(Reasoning, Agents)</span></div>
+      <div style="text-align:center;font-size:23px;color:var(--s-gray);padding-top:14px">Paid once per<br>generation</div><div></div>
+      <div style="text-align:center;font-size:23px;color:var(--s-gray);padding-top:14px">Scaling RL (×10, ×100)</div><div></div>
+      <div style="text-align:center;font-size:23px;color:var(--s-gray);padding-top:14px"><b style="color:#3a3a3a">~⅔ of all AI compute</b><br>(~⅓ in 2023)</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:48px;margin-top:52px">
+      <ul class="b sm f">
+        <li>Post-training is not cheap anymore
+          <ul><li>OpenAI o1 → o3: RL compute ×10</li><li>Composer 1.5: post-training compute exceeded pre-training</li></ul>
+        </li>
+      </ul>
+      <ul class="b sm f">
+        <li>Reasoning models cost more with <b>long contexts</b>
+          <ul><li>Output tokens per question grow ~5×/year for reasoning models (~2.2×/year otherwise)</li><li>Every token adds to the KV cache, so <b class="red">memory</b> becomes the bottleneck</li></ul>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="cite">Epoch AI, “The huge potential implications of long-context inference” · ARC Prize, “OpenAI o3 breakthrough”</div>
+</section>
+<section class="slide" data-sec="Intro" data-title="Today’s talk: retain, use, predict">
+  <h2 class="st">Today’s talk</h2>
+  <div class="sb">
+    <p class="lead" style="font-size:25px">Three choices: what to <b>retain</b>, how to <b>use</b> knowledge, and what to <b>predict</b>.</p>
+    <div style="margin-top:44px">
+      <div class="rm lg">
+      <div class="verb c1" style="grid-column:1">Retain</div><div class="verb c2" style="grid-column:2">Use</div><div class="verb c3" style="grid-column:3">Predict</div>
+      <div class="th mem c1"><b>Selective memory</b><span>Retain useful context</span></div>
+      <div class="th safe c2"><b>Safety-aware learning</b><span>Condition the use of dual-use knowledge</span></div>
+      <div class="th world c3"><b>Predictive world models</b><span>Learn from diverse visual experience and demonstrations</span></div>
+      <div class="pp c1">KVzip <span class="v">NeurIPS’25</span><br>Fast KVzip <span class="v">NeurIPS’26</span></div>
+      <div class="pp c2">Mark, Don’t Erase <span class="v">NeurIPS’26</span></div>
+      <div class="pp c3">Seoul World Model <span class="v">ECCV’26</span><br>LaLa-World <span class="v">arXiv soon</span><br>WATCH <span class="v">arXiv soon</span></div>
+      <div class="br" style="grid-column:1"><span>Efficient</span></div><div class="br" style="grid-column:2/4"><span>Reliable &amp; Grounded</span></div>
+      </div>
+    </div>
+    <div class="rm-key">
+      <div>the same behavior with less memory and computation</div>
+      <div>the intended behavior, under the right conditions and in the real world</div>
+    </div>
+  </div>
+</section>
+<!-- /SLIDES -->
+</div>
+<script src="common/chapters.js"></script>
+<script src="common/anim.js"></script>
+<script src="common/charts.js"></script>
+<script src="common/kv_anim.js"></script>
+<script src="common/deck.js"></script>
+</body>
+</html>

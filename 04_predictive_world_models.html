@@ -1,0 +1,537 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Part 3 · Predictive world models · Learning What Matters</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="common/lala/fonts.css">
+<link rel="stylesheet" href="common/deck.css">
+<link rel="stylesheet" href="common/ti.css">
+<link rel="stylesheet" href="common/media.css">
+</head>
+<body>
+<!--
+  Part 3 · Predictive world models
+  Edit the slides between SLIDES and /SLIDES. One <section class="slide"> = one 1440×810 slide.
+    data-title  name in the slide list          class="f"   revealed step by step with →
+    data-anim   animation(s) played on entry     img/        images used by this chapter
+  Shared styles: common/deck.css · charts: common/charts.js · KVzip animations: common/kv_anim.js
+-->
+<div id="stage">
+<!-- SLIDES -->
+<section class="slide divider" data-sec="3 · Predictive world models" data-title="Part 3 · Predictive world models">
+  <p class="dv-k">Part 3 · Predict</p>
+  <h2 class="st" style="top:74px">Predictive world models</h2>
+  <p class="dv-q">How can models learn to predict the world from diverse visual experience and demonstrations?</p>
+  <div class="sb" style="top:226px">
+      <div class="rm" data-on="c3">
+      <div class="verb c1" style="grid-column:1">Retain</div><div class="verb c2" style="grid-column:2">Use</div><div class="verb c3" style="grid-column:3">Predict</div>
+      <div class="th mem c1"><b>Selective memory</b><span>Retain useful context</span></div>
+      <div class="th safe c2"><b>Safety-aware learning</b><span>Condition the use of dual-use knowledge</span></div>
+      <div class="th world c3"><b>Predictive world models</b><span>Learn from diverse visual experience and demonstrations</span></div>
+      <div class="pp c1">KVzip <span class="v">NeurIPS’25</span><br>Fast KVzip <span class="v">NeurIPS’26</span></div>
+      <div class="pp c2">Mark, Don’t Erase <span class="v">NeurIPS’26</span></div>
+      <div class="pp c3">Seoul World Model <span class="v">ECCV’26</span><br>LaLa-World <span class="v">arXiv soon</span><br>WATCH <span class="v">arXiv soon</span></div>
+      <div class="br" style="grid-column:1"><span>Efficient</span></div><div class="br" style="grid-column:2/4"><span>Reliable &amp; Grounded</span></div>
+      </div>
+  </div>
+  <ul class="b xs dv-list">
+    <li><b>Seoul World Model:</b> ground long city videos in retrieved street views</li>
+    <li><b>LaLa-World:</b> one latent predictor for robots, simulators and web video, driven by language</li>
+    <li><b>WATCH:</b> transfer interactions from human demonstrations to robots</li>
+  </ul>
+</section>
+
+<section class="slide" data-sec="3 · Predictive world models" data-title="What is a world model?">
+  <h2 class="st">What is a world model?</h2>
+  <div class="sb" style="top:136px">
+    <p class="lead" style="font-size:27px">A world model predicts how the world changes when an agent acts.</p>
+    <svg class="chart" viewBox="0 0 1312 310" style="margin-top:16px;width:100%" role="img" aria-label="Illustrative schematic. A cup on a table and the action push the cup right go into a world model, which predicts the cup near the table edge. Applying the model again with keep pushing predicts the cup falling off the edge.">
+      <defs>
+        <marker id="wm-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10Z" fill="#888"/></marker>
+        <g id="wm-table"><rect x="12" y="118" width="148" height="8" rx="2" fill="#A7B0BA"/><rect x="22" y="126" width="7" height="36" fill="#C3CAD2"/><rect x="143" y="126" width="7" height="36" fill="#C3CAD2"/></g>
+        <g id="wm-cup"><path d="M-16 -22 H16 L12 22 H-12Z" fill="#7394C0"/><path d="M16 -13 C31 -13 31 10 13 10" fill="none" stroke="#7394C0" stroke-width="5"/></g>
+      </defs>
+      <g fill="#666" font-size="23" text-anchor="middle"><text x="100" y="30">Now</text><text x="826" y="30">Imagined, 1 step</text></g>
+      <rect x="0" y="48" width="200" height="172" rx="14" fill="#F4F5F6" stroke="#D2D7DD" stroke-width="1.5"/>
+      <use href="#wm-table" x="0" y="50"/>
+      <use href="#wm-cup" x="72" y="146"/>
+      <path d="M212 135 H434" fill="none" stroke="#888" stroke-width="2.5" marker-end="url(#wm-arrow)"/>
+      <rect x="206" y="86" width="236" height="40" rx="20" fill="#fff" stroke="#CFD5DD" stroke-width="1.5"/>
+      <text x="324" y="114" font-size="23" text-anchor="middle" fill="#333">“push the cup right”</text>
+      <text x="324" y="180" font-size="27" font-style="italic" text-anchor="middle" fill="#444" font-family="'STIX Two Text',serif">a<tspan font-size="18" baseline-shift="sub">t</tspan></text>
+      <rect x="450" y="70" width="220" height="130" rx="16" fill="#F9EEF3" stroke="#D6A6BD" stroke-width="1.5"/>
+      <text x="560" y="124" font-size="28" font-weight="700" text-anchor="middle" fill="#9F476F">World model</text>
+      <text x="560" y="168" font-size="26" text-anchor="middle" fill="#333" font-family="'STIX Two Text',serif"><tspan font-style="italic">x̂</tspan><tspan font-size="18" baseline-shift="sub">t+1</tspan> = <tspan font-style="italic">f</tspan>(<tspan font-style="italic">x</tspan><tspan font-size="18" baseline-shift="sub">t</tspan>, <tspan font-style="italic">a</tspan><tspan font-size="18" baseline-shift="sub">t</tspan>)</text>
+      <path d="M678 135 H716" fill="none" stroke="#888" stroke-width="2.5" marker-end="url(#wm-arrow)"/>
+      <rect x="726" y="48" width="200" height="172" rx="14" fill="#fff" stroke="#B4517F" stroke-width="2" stroke-dasharray="8 6"/>
+      <use href="#wm-table" x="726" y="50"/>
+      <use href="#wm-cup" x="798" y="146" opacity=".22"/>
+      <path d="M806 110 H846" fill="none" stroke="#B4517F" stroke-width="2.5" marker-end="url(#wm-arrow)"/>
+      <use href="#wm-cup" x="862" y="146"/>
+      <g font-size="27" font-style="italic" text-anchor="middle" fill="#444" font-family="'STIX Two Text',serif">
+        <text x="100" y="260">x<tspan font-size="18" baseline-shift="sub">t</tspan></text>
+        <text x="826" y="260">x̂<tspan font-size="18" baseline-shift="sub">t+1</tspan></text>
+      </g>
+      <g class="f" data-f="1">
+        <text x="1212" y="30" font-size="23" fill="#666" text-anchor="middle">Imagined, 2 steps</text>
+        <path d="M936 135 H1100" fill="none" stroke="#888" stroke-width="2.5" marker-end="url(#wm-arrow)"/>
+        <rect x="940" y="86" width="158" height="40" rx="20" fill="#fff" stroke="#CFD5DD" stroke-width="1.5"/>
+        <text x="1019" y="114" font-size="23" text-anchor="middle" fill="#333">“keep pushing”</text>
+        <text x="1019" y="180" font-size="27" font-style="italic" text-anchor="middle" fill="#444" font-family="'STIX Two Text',serif">a<tspan font-size="18" baseline-shift="sub">t+1</tspan></text>
+        <rect x="1112" y="48" width="200" height="172" rx="14" fill="#fff" stroke="#B4517F" stroke-width="2" stroke-dasharray="8 6"/>
+        <use href="#wm-table" x="1112" y="50"/>
+        <g transform="translate(1278 178)"><g transform="rotate(35)"><use href="#wm-cup"/></g></g>
+        <path d="M1230 128 q10 -10 22 -4 M1238 112 q10 -10 22 -4" fill="none" stroke="#B4517F" stroke-width="2.5" stroke-linecap="round"/>
+        <text x="1134" y="98" font-size="24" font-weight="700" fill="#E03E2D">falls!</text>
+        <text x="1212" y="260" font-size="27" font-style="italic" text-anchor="middle" fill="#444" font-family="'STIX Two Text',serif">x̂<tspan font-size="18" baseline-shift="sub">t+2</tspan></text>
+        <text x="656" y="302" font-size="24" text-anchor="middle" fill="#555">Apply the same model again to foresee the fall, before touching the cup.</text>
+      </g>
+    </svg>
+    <div class="f" data-f="2" style="margin-top:22px">
+      <p class="wm-k">Three uses in this part</p>
+      <div class="wm-uses">
+        <div><b>Simulate</b><span>Render what a camera would see</span><em>Seoul World Model</em></div>
+        <div><b>Plan</b><span>Compare imagined futures before acting</span><em>LaLa-World</em></div>
+        <div><b>Act</b><span>Predict the action together with its future</span><em>LaLa-Policy · WATCH</em></div>
+      </div>
+    </div>
+  </div>
+  <div class="cite">World models: Ha &amp; Schmidhuber, 2018; LeCun, 2022 · cup example after LaLa-World §1: “Before pushing a cup across a table, we know where it will end up and whether it might fall.” · illustrative schematic.</div>
+</section>
+
+<section class="slide paper" data-sec="3 · Predictive world models" data-title="Seoul World Model (ECCV’26)">
+  <p class="venue">ECCV’26</p>
+  <h2><b>Seoul World Model:</b> Grounding World Simulation Models in a Real-World Metropolis</h2>
+  <div class="authors" style="gap:14px 34px;top:450px">
+    <div><b>Junyoung Seo*</b><span>KAIST AI</span></div><div><b>Hyunwook Choi*</b><span>KAIST AI</span></div><div><b>Minkyung Kwon</b><span>KAIST AI</span></div><div><b>Jinhyeok Choi</b><span>KAIST AI</span></div><div><b>Siyoon Jin</b><span>KAIST AI</span></div><div><b>Gayoung Lee</b><span>NAVER AI Lab</span></div><div><b>Junho Kim</b><span>NAVER AI Lab</span></div>
+    <div><b>JoungBin Lee</b><span>KAIST AI</span></div><div><b>Geonmo Gu</b><span>NAVER AI Lab</span></div><div><b>Dongyoon Han</b><span>NAVER AI Lab</span></div><div><b class="me">Sangdoo Yun</b><span>NAVER AI Lab</span></div><div><b>Seungryong Kim<sup>†</sup></b><span>KAIST AI</span></div><div><b>Jin-Hwa Kim<sup>†</sup></b><span>NAVER AI Lab</span></div>
+  </div>
+  <div class="links"><span>arXiv:2603.15583</span><span>seoul-world-model.github.io</span><span>* equal contribution · † co-corresponding</span></div>
+</section>
+
+<section class="slide" data-sec="3 · Predictive world models" data-title="SWM: motivation and challenges">
+  <h2 class="st">Motivation and challenges</h2>
+  <div class="sb" style="display:grid;grid-template-columns:830px 1fr;gap:44px;align-items:start;top:136px">
+    <img class="fig" src="img/swm_fig1.webp" alt="Two routes on a Seoul map, 1.8 km and 1.2 km, with generated frames along each route; mid-route text prompts light a car on fire and make Godzilla appear between skyscrapers." style="width:830px">
+    <div class="col" style="gap:26px;padding-top:40px">
+      <div><p class="lead" style="color:#666">Goal:</p>
+        <ul class="b sm" style="margin-top:10px"><li>Consistent long-video generation</li><li>Grounded in the real world</li></ul></div>
+      <div><p class="lead" style="color:#666">Challenges:</p>
+        <ul class="b sm" style="margin-top:10px"><li class="f">1. hallucination</li><li class="f">2. cost to train a city</li><li class="f">3. adapt to a changing world</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-sec="3 · Predictive world models" data-title="Grounding in a physical world">
+  <h2 class="st">Grounding in a physical world</h2>
+  <div class="sb" style="top:124px">
+    <div style="display:flex;justify-content:center;align-items:center;gap:18px;height:76px">
+      <div class="frame" style="position:relative;width:58px;height:76px;flex:none" aria-hidden="true"><img src="img/swm-video/streetview.webp" alt="" style="position:absolute;width:720px;max-width:none;height:404px;left:-43px;top:-318px"></div>
+      <div style="font-size:27px;line-height:1.3;text-align:center;color:#444">Geographic Coordinate,<br>Camera Actions</div>
+    </div>
+    <svg viewBox="0 0 220 34" width="220" height="34" style="display:block;margin:0 auto" aria-hidden="true"><defs><marker id="swm-grounding-in" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0 0 L7 3.5 L0 7 L2 3.5Z" fill="#888"/></marker></defs><path d="M214 29 C185 1 35 1 7 29" fill="none" stroke="#888" stroke-width="2" marker-end="url(#swm-grounding-in)"/></svg>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:start">
+      <figure style="margin:0"><video class="deck-video" loop id="swm-streetview-video" controls muted playsinline preload="metadata" poster="img/swm-video/streetview.webp" src="media/swm-streetview.mp4" data-poster-time="0.5" data-slide-autoplay data-video-group="swm-grounding" aria-label="NAVER street-view recording of a Seoul street"></video><figcaption style="font-size:26px;line-height:1.4;text-align:center;margin-top:8px;color:#555">Street-View Dataset</figcaption></figure>
+      <figure style="margin:0"><video class="deck-video" loop id="swm-generated-video" controls muted playsinline preload="metadata" poster="img/swm-video/generated.webp" src="media/swm-generated.mp4" data-poster-time="0.5" data-slide-autoplay data-video-group="swm-grounding" aria-label="Street scenes generated by Seoul World Model"></video><figcaption style="font-size:26px;line-height:1.4;text-align:center;margin-top:8px;color:#555">Generated Video</figcaption></figure>
+    </div>
+    <svg viewBox="0 0 220 36" width="220" height="36" style="display:block;margin:-12px auto 0" aria-hidden="true"><defs><marker id="swm-grounding-out" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0 0 L7 3.5 L0 7 L2 3.5Z" fill="#888"/></marker></defs><path d="M6 6 C35 36 185 36 213 6" fill="none" stroke="#888" stroke-width="2" marker-end="url(#swm-grounding-out)"/></svg>
+    <div style="font-size:28px;line-height:1.3;font-weight:500;text-align:center;color:#444;margin-top:12px">Retrieval-Augmented Generation (RAG)-based<br>World Simulation</div>
+  </div>
+</section>
+
+<section class="slide" data-sec="3 · Predictive world models" data-title="SWM method: retrieval-augmented conditioning">
+  <h2 class="st">Method <small>retrieval-augmented conditioning</small></h2>
+  <div class="sb swmw" style="top:128px;display:grid;grid-template-columns:900px 1fr;gap:30px;align-items:start">
+    <div>
+      <div class="swmw-fig">
+        <img class="fig" src="img/swm_method.png" alt="Original SWM architecture: user inputs and camera motion query a geo-indexed street-view database; geometric reprojection, semantic references and virtual lookahead condition the autoregressive video diffusion transformer." style="display:block;width:900px">
+        <svg viewBox="0 0 1382 714" preserveAspectRatio="none" aria-hidden="true">
+          <g class="f k1" data-f="1"><rect x="218" y="12" width="200" height="192" rx="14"/><circle cx="218" cy="12" r="28"/><text x="218" y="25">1</text></g>
+          <g class="f k2" data-f="2"><rect x="444" y="44" width="422" height="138" rx="14"/><circle cx="444" cy="44" r="28"/><text x="444" y="57">2</text></g>
+          <g class="f k3" data-f="3"><rect x="892" y="44" width="484" height="114" rx="14"/><circle cx="892" cy="44" r="28"/><text x="892" y="57">3</text></g>
+          <g class="f k4" data-f="4"><rect x="486" y="220" width="890" height="200" rx="14"/><rect x="184" y="452" width="1192" height="176" rx="14"/><circle cx="184" cy="452" r="28"/><text x="184" y="465">4</text></g>
+          <g class="f k5" data-f="5"><rect x="12" y="24" width="208" height="172" rx="14"/><path class="hl" d="M118 198 V580 H184"/><circle cx="12" cy="24" r="28"/><text x="12" y="37">5</text></g>
+        </svg>
+      </div>
+      <div class="swmw-cap">
+        <p class="k0">Real street views, retrieved along the camera path, ground every generated chunk.</p>
+        <p class="f k1" data-f="1"><b>1 · User input</b>A starting location (latitude, longitude) and camera motion from the keyboard and mouse.</p>
+        <p class="f k2" data-f="2"><b>2 · Camera trajectory</b>The motion becomes the target camera path for the next video chunk.</p>
+        <p class="f k3" data-f="3"><b>3 · Street-view retrieval</b>Street views near that path come from a geo-indexed database.</p>
+        <p class="f k4" data-f="4"><b>4 · Into the AR video diffusion model</b>Warped views (geometric), raw references (semantic) and a lookahead view condition each chunk.</p>
+        <p class="f k5" data-f="5"><b>5 · Text prompt</b>The prompt enters the same model, so text can set the scene, the time of day or events.</p>
+      </div>
+    </div>
+    <figure style="margin:0"><video class="deck-video" id="swm-retrieval-video" controls muted loop playsinline preload="metadata" poster="img/swm-video/retrieval.webp" src="media/swm-retrieval.mp4" data-poster-time="6.55" data-slide-autoplay aria-label="SWM retrieval demonstration with a generated frame, trajectory map, point cloud, retrieved references and lookahead sink"></video><figcaption class="cap">Retrieved references and lookahead sink</figcaption></figure>
+  </div>
+  <div class="cite">SWM · original architecture figure (supplied), step highlights added · right: retrieval demonstration video, looped.</div>
+</section>
+
+<section class="slide" data-sec="3 · Predictive world models" data-title="Seoul World Model in action">
+  <h2 class="st">Seoul World Model in action</h2>
+  <div class="sb" style="top:112px;display:grid;grid-template-columns:1fr 1fr;gap:16px 48px;align-content:start">
+    <figure style="margin:0 auto;width:500px">
+      <video class="deck-video" loop id="swm-free-walking-video" controls muted playsinline preload="metadata" poster="img/swm-video/free-walking.webp" src="media/swm-free-walking.mp4" data-poster-time="0.5" data-slide-autoplay data-video-group="swm-demos" aria-label="Seoul World Model free-walking demonstration"></video>
+      <figcaption style="font-size:24px;line-height:1.3;text-align:center;margin-top:6px;color:#555">Free walking</figcaption>
+    </figure>
+    <figure style="margin:0 auto;width:500px">
+      <video class="deck-video" loop id="swm-long-video" controls muted playsinline preload="metadata" poster="img/swm-video/long-vid.webp" src="media/swm-long-vid.mp4" data-poster-time="0.5" data-slide-autoplay data-video-group="swm-demos" aria-label="Seoul World Model long-horizon generation with a trajectory map"></video>
+      <figcaption style="font-size:24px;line-height:1.3;text-align:center;margin-top:6px;color:#555">Long-horizon generation</figcaption>
+    </figure>
+    <figure style="grid-column:1/-1;margin:0 auto;width:500px">
+      <video class="deck-video" loop id="swm-text-prompt-video" controls muted playsinline preload="metadata" poster="img/swm-video/text-prompt.webp" src="media/swm-text-prompt.mp4" data-poster-time="0.5" data-slide-autoplay data-video-group="swm-demos" aria-label="Seoul World Model generated scenes controlled by text prompts"></video>
+      <figcaption style="font-size:24px;line-height:1.3;text-align:center;margin-top:6px;color:#555">Text-prompt control</figcaption>
+    </figure>
+  </div>
+</section>
+
+
+<section class="slide" data-sec="3 · Predictive world models" data-title="LaLa-World: why efficient latent prediction matters">
+  <h2 class="st">Choosing one action means imagining many futures</h2>
+  <div class="sb" style="top:140px">
+    <p class="lead" style="font-size:27px">Planning compares candidate actions, looks several steps ahead, and repeats after acting.</p>
+    <svg class="chart" viewBox="0 0 1312 370" style="margin-top:26px;width:100%" role="img" aria-label="Illustrative planning diagram, built step by step. One current observation branches into move-left, move-forward, and move-right candidates; each is rolled forward into predicted futures; the futures are compared with the goal and the closest candidate, move right, is selected.">
+      <defs>
+        <marker id="latent-plan-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10Z" fill="#9A9FA5"/></marker>
+        <pattern id="latent-plan-grid" width="18" height="18" patternUnits="userSpaceOnUse"><rect width="18" height="18" fill="#F2F4F7"/><path d="M18 0H0V18" fill="none" stroke="#C3CBD6" stroke-width="1"/></pattern>
+      </defs>
+      <g fill="#666" font-size="23" text-anchor="middle"><text x="114" y="24">Current observation</text><text x="439" y="24">Candidate actions</text></g>
+      <rect x="0" y="117" width="228" height="166" rx="12" fill="#F4F5F6" stroke="#D2D7DD" stroke-width="1.5"/>
+      <rect x="133" y="153" width="59" height="81" rx="4" fill="none" stroke="#16A08C" stroke-width="3" stroke-dasharray="7 5"/>
+      <path d="M90 191 H141 V212 H125 V242 H105 V212 H90Z" fill="#7394C0"/>
+      <circle cx="65" cy="236" r="17" fill="#E8794B" stroke="#C6653D" stroke-width="2"/>
+      <text x="114" y="321" font-size="23" text-anchor="middle" fill="#666">One state to plan from</text>
+      <path d="M238 200 H276 V85 H308 M276 200 H308 M276 200 V315 H308" fill="none" stroke="#A9ADB3" stroke-width="2" marker-end="url(#latent-plan-arrow)"/>
+      <g font-size="24" text-anchor="middle" fill="#555"><rect x="323" y="50" width="232" height="70" rx="12" fill="#F7F8FA" stroke="#CFD5DD"/><text x="439" y="94">“move left”</text>
+        <rect x="323" y="165" width="232" height="70" rx="12" fill="#F7F8FA" stroke="#CFD5DD"/><text x="439" y="209">“move forward”</text>
+        <rect x="323" y="280" width="232" height="70" rx="12" fill="#F7F8FA" stroke="#CFD5DD"/><text x="439" y="324">“move right”</text></g>
+      <g class="f" data-f="1">
+        <text x="809" y="24" fill="#666" font-size="23" text-anchor="middle">Predicted futures</text>
+        <g fill="url(#latent-plan-grid)" stroke="#BCC6D2"><rect x="625" y="49" width="72" height="72" rx="5"/><rect x="773" y="49" width="72" height="72" rx="5"/><rect x="921" y="49" width="72" height="72" rx="5"/>
+          <rect x="625" y="164" width="72" height="72" rx="5"/><rect x="773" y="164" width="72" height="72" rx="5"/><rect x="921" y="164" width="72" height="72" rx="5"/>
+          <rect x="625" y="279" width="72" height="72" rx="5"/><rect x="773" y="279" width="72" height="72" rx="5"/><rect x="921" y="279" width="72" height="72" rx="5"/></g>
+        <g fill="#7897C0"><rect x="645" y="87" width="34" height="16" rx="2"/><rect x="775" y="87" width="34" height="16" rx="2"/><rect x="921" y="87" width="34" height="16" rx="2"/>
+          <rect x="645" y="184" width="34" height="16" rx="2"/><rect x="793" y="167" width="34" height="16" rx="2"/><rect x="941" y="164" width="34" height="16" rx="2"/>
+          <rect x="645" y="317" width="34" height="16" rx="2"/><rect x="811" y="317" width="34" height="16" rx="2"/><rect x="959" y="299" width="34" height="16" rx="2"/></g>
+        <g fill="none" stroke="#9A9FA5" stroke-width="2" marker-end="url(#latent-plan-arrow)"><path d="M567 85H611 M709 85H759 M857 85H907"/><path d="M567 200H611 M709 200H759 M857 200H907"/><path d="M567 315H611 M709 315H759 M857 315H907"/></g>
+      </g>
+      <g class="f" data-f="2">
+        <text x="1191" y="24" fill="#666" font-size="23" text-anchor="middle">Compare with goal</text>
+        <g fill="none" stroke="#9A9FA5" stroke-width="2" marker-end="url(#latent-plan-arrow)"><path d="M1006 85H1060 M1006 200H1060 M1006 315H1060"/></g>
+        <g fill="#16A08C"><rect x="645" y="317" width="34" height="16" rx="2"/><rect x="811" y="317" width="34" height="16" rx="2"/><rect x="959" y="299" width="34" height="16" rx="2"/></g>
+        <rect x="323" y="280" width="232" height="70" rx="12" fill="#EAF6F1" stroke="#16A08C" stroke-width="2"/><text x="439" y="324" font-size="24" text-anchor="middle" fill="#157762" font-weight="700">“move right”</text>
+        <g font-size="23" text-anchor="middle"><text x="1191" y="94" fill="#888">Farther</text><text x="1191" y="209" fill="#888">Farther</text><rect x="1070" y="272" width="242" height="86" rx="12" fill="#EAF6F1" stroke="#16A08C" stroke-width="2"/><text x="1191" y="306" fill="#157762" font-weight="700">Closest</text><text x="1191" y="339" fill="#157762">execute first action</text></g>
+      </g>
+    </svg>
+    <p class="lead f" data-f="3" style="text-align:center;font-size:25px;margin-top:20px;color:#666">Prediction cost is repeated across <b>candidates × steps ahead × replanning rounds</b>.</p>
+    <div class="f" data-f="4" style="border-top:2px solid #D5DDD9;margin-top:23px;padding-top:21px;text-align:center"><p class="lead" style="font-size:29px"><b style="color:#157762">Need: fast forecasts that keep the task-relevant change.</b></p><p class="lead" style="font-size:24px;margin-top:7px">Rendering every candidate future in pixels multiplies the cost.</p></div>
+  </div>
+  <div class="cite">Illustrative planning schematic, not experimental trajectories · LaLa-World: language-conditioned latent rollouts and goal-distance scoring.</div>
+</section>
+
+<section class="slide" data-sec="3 · Predictive world models" data-title="Latent world models">
+  <h2 class="st">Latent world models: predict what matters, not pixels</h2>
+  <div class="sb" style="top:136px">
+    <p class="lead" style="font-size:27px">Predict the next frame’s <b>encoding</b>, not the next frame.</p>
+    <div class="lwm" style="margin-top:14px;height:372px" role="img" aria-label="Latent world model training. The Push-T frame at time t passes through a frozen DINO encoder to patch features e_t. A predictor conditioned on the action vector predicts the next features, e-hat t+1. The next frame passes through the same frozen encoder to e_t+1, and the loss is the squared distance between the two feature maps; no pixels are reconstructed.">
+      <svg viewBox="0 0 1312 372" style="height:372px" aria-hidden="true">
+        <defs>
+          <marker id="lwm-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10Z" fill="#888"/></marker>
+          <marker id="lwm-arrow-t" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10Z" fill="#16A08C"/></marker>
+        </defs>
+        <g fill="none" stroke-width="2.5">
+          <path d="M128 106 H170" stroke="#888" marker-end="url(#lwm-arrow)"/>
+          <path d="M346 106 H388" stroke="#16A08C" marker-end="url(#lwm-arrow-t)"/>
+          <path d="M524 106 H566" stroke="#16A08C" marker-end="url(#lwm-arrow-t)"/>
+          <path d="M684 40 V54" stroke="#888" marker-end="url(#lwm-arrow)"/>
+          <path d="M802 106 H844" stroke="#888" marker-end="url(#lwm-arrow)"/>
+        </g>
+        <g class="f" data-f="1" fill="none" stroke-width="2.5">
+          <path d="M606 266 H638" stroke="#888" marker-end="url(#lwm-arrow)"/>
+          <path d="M812 266 H846" stroke="#16A08C" marker-end="url(#lwm-arrow-t)"/>
+          <path d="M980 106 C1012 106 1012 160 1040 160" stroke="#888" marker-end="url(#lwm-arrow)"/>
+          <path d="M980 266 C1012 266 1012 206 1040 206" stroke="#16A08C" marker-end="url(#lwm-arrow-t)"/>
+        </g>
+      </svg>
+      <img class="fr" data-lw="fig2_pusht_init" alt="" style="left:0;top:46px;width:120px;height:120px">
+      <div class="lbl" style="left:0;top:174px;width:120px">x<sub>t</sub></div>
+      <div class="bx enc" style="left:174px;top:61px;width:166px;height:90px"><b>Encoder</b><span>(Frozen DINO)</span></div>
+      <div class="lat" style="left:396px;top:46px;width:120px;height:120px"><img data-lw="latent_pca_1" alt=""></div>
+      <div class="lbl t" style="left:396px;top:174px;width:120px">e<sub>t</sub></div>
+      <div class="act" style="left:544px;top:0;width:280px">a<sub>t</sub> = [−1.19, 0.68]</div>
+      <div class="bx pred" style="left:574px;top:56px;width:220px;height:100px"><b>Predictor</b><span>conditioned on the action</span></div>
+      <div class="lat" style="left:852px;top:46px;width:120px;height:120px"><img data-lw="latent_pca_2" alt=""></div>
+      <div class="lbl" style="left:852px;top:174px;width:120px">ê<sub>t+1</sub></div>
+      <img class="fr f" data-f="1" data-lw="fig2_pusht_1" alt="" style="left:480px;top:206px;width:120px;height:120px">
+      <div class="lbl f" data-f="1" style="left:480px;top:334px;width:120px">x<sub>t+1</sub></div>
+      <div class="bx enc f" data-f="1" style="left:644px;top:221px;width:166px;height:90px"><b>Encoder</b><span>(Frozen DINO)</span></div>
+      <div class="lat f" data-f="1" style="left:852px;top:206px;width:120px;height:120px"><img data-lw="latent_pca_3" alt=""></div>
+      <div class="lbl t f" data-f="1" style="left:852px;top:334px;width:120px">e<sub>t+1</sub></div>
+      <div class="loss f" data-f="1" style="left:1048px;top:118px;width:264px"><b>‖ê<sub>t+1</sub> − e<sub>t+1</sub>‖<sup>2</sup></b><span>no pixel decoding</span></div>
+    </div>
+    <div class="lwm-vs f" data-f="2" style="margin-top:18px">
+      <div class="vg"><b>Generative world model</b><span>Synthesizes every pixel of the next frame, often over many denoising steps · e.g., SWM, Cosmos</span></div>
+      <div class="vl"><b>Latent world model</b><span>Predicts the next encoding in one pass and plans by distance to the goal’s encoding · e.g., DINO-WM, V-JEPA 2-AC</span></div>
+    </div>
+    <p class="lead f" data-f="3" style="text-align:center;font-size:26px;margin-top:20px">But the action vector <i>a</i><sub>t</sub> means something different in every domain.</p>
+  </div>
+  <div class="cite">DINO-WM (Zhou et al., 2025) · V-JEPA 2-AC (Assran et al., 2025) · LaLa-World Eq. (1) · frames and <i>a</i><sub>t</sub> (1.19 left, 0.68 up): Fig. 2, Push-T · latent panels: PCA of predicted latents, Fig. M (Wall).</div>
+</section>
+
+<section class="slide" data-sec="3 · Predictive world models" data-title="LaLa-World: language as the shared action interface" data-skip>
+  <h2 class="st">Can one predictor learn from all this experience?</h2>
+  <div class="sb" style="top:136px;">
+<p class="lead" style="font-size:26px;margin-bottom:24px">Robots, simulators, and web video describe change in different ways.</p><figure style="margin:0;"><img class="fig" src="img/lala-paper/fig3_language_transition_data.webp" alt="LaLa-World Figure 3: actual transition pairs from Push-T, PointMaze, Wall, OmniEdit, Granular, Meta-World, DROID and OpenVid with language descriptions." style="width:100%"><figcaption class="cap"></figcaption></figure><div style="display:grid;grid-template-columns:1.1fr 1.2fr 1fr;gap:36px;margin-top:26px;font-size:24px;line-height:1.35;color:#555"><div class="f" data-f="1"><b style="color:#333">Different action spaces</b><br>Control vectors vary in size and meaning.</div><div class="f" data-f="2"><b style="color:#E03E2D">One shared interface</b><br>Describe each transition in language.</div><div class="f" data-f="3"><b style="color:#333">10 datasets · 6.5M pairs</b><br>Control, video, and image edits.</div></div>
+  </div>
+  <div class="cite">LaLa-World · Figure 3, Table G · original figure from the supplied paper; captions are the model’s language conditions.</div>
+</section>
+
+<section class="slide paper" data-sec="3 · Predictive world models" data-title="LaLa-World (arXiv soon)">
+  <p class="venue">arXiv soon</p>
+  <h2><b><span style="color:#E03E2D">La</span><span style="color:#16A08C">La</span>-World:</b> Scaling Latent World Models with Natural Language Actions</h2>
+  <p style="position:absolute;left:76px;top:410px;margin:0;font-size:26px;color:#555"><b style="color:#E03E2D">La</b>nguage-conditioned <b style="color:#16A08C">La</b>tent <b style="color:#222">World</b> model</p>
+  <div class="lw-auth"><p>Junha Song<sup>1*</sup>&ensp; Geonmo Gu<sup>1</sup>&ensp; Jeongeun Park<sup>2</sup>&ensp; Heejeong Nam<sup>3</sup>&ensp; Lucas Maes<sup>4</sup><br>Byeongho Heo<sup>1</sup>&ensp; Dongyoon Han<sup>1</sup>&ensp; <b class="me">Sangdoo Yun</b><sup>1†</sup></p><p class="aff"><sup>1</sup>NAVER AI Lab&ensp; <sup>2</sup>Georgia Institute of Technology&ensp; <sup>3</sup>Brown University&ensp; <sup>4</sup>Mila &amp; Université de Montréal</p><p class="fn">* project lead · † corresponding author</p></div>
+  <div class="lw-strip" aria-hidden="true">
+    <img data-lw="dom_pusht" alt=""><img data-lw="dom_pointmaze" alt=""><img data-lw="dom_metaworld" alt=""><img data-lw="dom_droid" alt=""><img data-lw="fig3_openvid_a" alt=""><img data-lw="fig3_omniedit_a" alt="">
+  </div>
+</section>
+
+<section class="slide" data-sec="3 · Predictive world models" data-title="LaLa-World: from action dialects to words">
+  <h2 class="st">Every domain speaks its own action dialect</h2>
+  <div class="sb" style="top:132px">
+    <p class="lead" style="font-size:26px">Numeric actions change size and meaning across domains, and video has no actions at all.</p>
+    <div class="lwd" style="margin-top:16px">
+      <div class="lwd-r lwd-h"><span></span><span>Domain</span><span>Action vector</span><span></span><span class="f" data-f="2">Our idea: say every action in words</span></div>
+      <div class="lwd-r"><img data-lw="dom_pusht" alt=""><span><b>Push-T</b><i>2-D</i></span><span><code>[−0.60, −1.95]</code><em>pusher displacement</em></span><span class="lwd-ar f" data-f="2">→</span><span class="lwd-t f" data-f="2">“Move the pusher 0.60 left and 1.95 down”</span></div>
+      <div class="lwd-r"><img data-lw="dom_pointmaze" alt=""><span><b>PointMaze</b><i>2-D</i></span><span><code>[0.50, 0.46]</code><em>force on the ball</em></span><span class="lwd-ar f" data-f="2">→</span><span class="lwd-t f" data-f="2">“Push the ball with force 0.50 right and 0.46 up”</span></div>
+      <div class="lwd-r"><img data-lw="dom_metaworld" alt=""><span><b>Meta-World</b><i>4-D</i></span><span><code>[0.81, 0.84, −1.46, −0.08]</code><em>gripper xyz + grip</em></span><span class="lwd-ar f" data-f="2">→</span><span class="lwd-t f" data-f="2">“Move the gripper 0.81 right, 0.84 forward, 1.46 down and loosen the grip by 0.08”</span></div>
+      <div class="lwd-r"><img data-lw="dom_droid" alt=""><span><b>DROID</b><i>7-D</i></span><span><code>[0.5, 0.6, 5.9, 2, −7, …]</code><em>end-effector pose + gripper</em></span><span class="lwd-ar f" data-f="2">→</span><span class="lwd-t f" data-f="2">“Move gripper 0.5cm forward, 0.6cm right, 5.9cm up; rotate roll +2deg, pitch −7deg, …”</span></div>
+      <div class="lwd-r"><img data-lw="fig3_openvid_a" alt=""><span><b>OpenVid</b><i>web video</i></span><span><code class="none">no action label</code><em>captions only</em></span><span class="lwd-ar f" data-f="2">→</span><span class="lwd-t f" data-f="2">“The hand stirs the liquid in the cup with the spoon, creating a swirling motion …”</span></div>
+    </div>
+    <div class="lwd-foot">
+      <p class="lwd-p no f" data-f="1">Separate predictors per domain; video data left unused.</p>
+      <p class="lwd-p ok f" data-f="3">One shared interface → <b>one predictor for every domain</b> · 10 datasets · 6.5M transitions</p>
+    </div>
+  </div>
+  <div class="cite">LaLa-World · after the problem and idea scenes of the explainer video (materials/lala-world-video); Fig. 1(a), Fig. 3, Table G · vector signs are illustrative; magnitudes and sentences follow Fig. 3.</div>
+</section>
+
+<section class="slide" data-sec="3 · Predictive world models" data-title="LaLa-World: a language model as the predictor">
+  <h2 class="st">A language model is the world-model predictor</h2>
+  <div class="sb" style="top:136px">
+    <p class="lead" style="font-size:27px">The same latent pipeline, but the action is <b>read as text</b> by a language model.</p>
+    <div class="lwm" style="margin-top:10px;height:390px" role="img" aria-label="LaLa-World model: frames at t-1 and t pass through a frozen DINO encoder to patch latents; a language-model predictor reads the visual tokens, the action as text tokens and learned queries, and predicts the next latent; fine-tuning turns it into LaLa-Policy, which also predicts an action chunk.">
+      <svg viewBox="0 0 1312 390" style="height:390px" aria-hidden="true">
+        <defs><marker id="lmp-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10Z" fill="#888"/></marker><marker id="lmp-arrow-t" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10Z" fill="#16A08C"/></marker></defs>
+        <g fill="none" stroke-width="2.5"><path d="M132 187 H156" stroke="#888" marker-end="url(#lmp-arrow)"/><path d="M330 187 H356" stroke="#16A08C" marker-end="url(#lmp-arrow-t)"/><path d="M490 187 H518" stroke="#16A08C" marker-end="url(#lmp-arrow-t)"/></g>
+        <g class="f" data-f="2" fill="none" stroke-width="2.5"><path d="M1148 175 H1176" stroke="#888" marker-end="url(#lmp-arrow)"/></g>
+        <g class="f" data-f="3" fill="none" stroke-width="2.5"><path d="M834 314 V334" stroke="#888" marker-end="url(#lmp-arrow)"/></g>
+      </svg>
+      <img class="fr" data-lw="fig2_pusht_init" alt="" style="left:0;top:118px;width:110px;height:110px;opacity:.5">
+      <img class="fr" data-lw="fig2_pusht_1" alt="" style="left:16px;top:134px;width:110px;height:110px">
+      <div class="lbl" style="left:0;top:256px;width:130px">x<sub>t−1:t</sub></div>
+      <div class="bx enc" style="left:162px;top:142px;width:162px;height:90px"><b>Encoder</b><span>(Frozen DINO)</span></div>
+      <div class="lat" style="left:364px;top:127px;width:120px;height:120px"><img data-lw="latent_pca_1" alt=""></div>
+      <div class="lbl t" style="left:364px;top:256px;width:120px">e<sub>t−1:t</sub></div>
+      <div class="lmb" style="left:526px;top:40px;width:616px;height:274px">
+        <p class="lmb-h">Predictor: a language model<span>Qwen3.5-0.8B</span></p>
+        <p class="lmb-z f" data-f="1"><i>z</i> = “move 2 left and 4 up”</p>
+        <div class="lmb-row">
+          <div class="lmb-g"><div><i class="vt"><img data-lw="latent_pca_1" alt="" style="margin:-30px 0 0 -40px"></i><i class="vt"><img data-lw="latent_pca_1" alt="" style="margin:-96px 0 0 -120px"></i><i class="vt"><img data-lw="latent_pca_1" alt="" style="margin:-150px 0 0 -70px"></i></div><span>visual</span></div>
+          <div class="lmb-g f" data-f="1"><div><i class="tt">move</i><i class="tt">2</i><i class="tt">left</i><i class="tt">and</i><i class="tt">4</i><i class="tt">up</i></div><span>text</span></div>
+          <div class="lmb-g f" data-f="2"><div><i class="qt">q</i><i class="qt">q</i><i class="qt">q</i></div><span>queries</span></div>
+        </div>
+      </div>
+      <div class="lat f" data-f="2" style="left:1184px;top:115px;width:120px;height:120px"><img data-lw="latent_pca_2" alt=""></div>
+      <div class="lbl f" data-f="2" style="left:1184px;top:244px;width:120px">ê<sub>t+1</sub></div>
+      <div class="lmp-pol f" data-f="3" style="left:526px;top:342px;width:640px">Fine-tune → <b>LaLa-Policy</b> predicts <i>a<sub>1</sub></i><i>a<sub>2</sub></i><i>a<sub>3</sub></i>… and the future latent</div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:36px;font-size:25px;line-height:1.35;color:#555;margin-top:16px"><div class="f" data-f="1"><b style="color:#333">Read actions as text</b><br>The LM consumes the language condition with visual latents.</div><div class="f" data-f="2"><b style="color:#333">Predict the next latent</b><br>Learned queries read out ê<sub>t+1</sub>, matched to the frozen encoder’s e<sub>t+1</sub>.</div><div class="f" data-f="3"><b style="color:#333">Reuse the learned dynamics</b><br>Fine-tune the world model to predict actions and future states.</div></div>
+  </div>
+  <div class="cite">LaLa-World §3.2, Fig. 1(b) · drawn after the explainer video’s model scene · predictor Qwen3.5-0.8B, frozen DINO encoder; example action from §1 · latent panels: PCA views (Fig. M), illustrative.</div>
+</section>
+
+<section class="slide" data-sec="3 · Predictive world models" data-title="LaLa-World: planning with language actions">
+  <h2 class="st">Planning with imagination, in words</h2>
+  <div class="sb" style="top:136px;">
+<p class="lead" style="font-size:24px;margin-bottom:16px">Sample actions → predict latent futures → compare with the goal → execute the best.</p><figure style="margin:0;width:1240px;margin:0 auto"><img class="fig" src="img/lala-paper/fig2_pusht.webp" alt="Figure 2 Push-T: simulator observations after executing numerical language actions chosen by MPC." style="width:100%"><figcaption class="cap"></figcaption></figure><figure class="f" data-f="1" style="margin:0;width:1240px;margin:12px auto 0"><img class="fig" src="img/lala-paper/fig2_wall.webp" alt="Figure 2 Wall: simulator observations after executing qualitative language actions such as slightly and far chosen by MPC." style="width:100%"><figcaption class="cap"></figcaption></figure><p class="lead f" data-f="2" style="font-size:25px;margin-top:20px;text-align:center">One predictor understands numerical actions and words such as <b>“slightly”</b> and <b>“far”</b>.</p>
+  </div>
+  <div class="cite">LaLa-World · Figure 2, selected rows (shared header repeated for Wall) · images are simulator observations after selected actions, not decoded predictions.</div>
+</section>
+
+<section class="slide" data-sec="3 · Predictive world models" data-title="LaLa-World: planning results">
+  <h2 class="st">Higher average planning scores with one predictor</h2>
+  <div class="sb" style="display:grid;grid-template-columns:690px 1fr;gap:40px;align-items:start;top:132px">
+    <figure style="margin:0">
+      <svg class="chart" id="ch-lwbars" viewBox="0 0 690 540" role="img" aria-label="Average planning score: simulated control LaLa-World 72.1 vs JEPA-WMs 64.6 and DINO-WM 62.3; deformables, zero-shot and real robot LaLa-World 50.5 vs JEPA-WMs 44.8 and DINO-WM 36.8"></svg>
+    </figure>
+    <div class="col" style="gap:12px">
+      <p class="lead" style="font-size:24px"><b>What the one predictor imagines</b></p>
+      <div class="lwg">
+        <figure><img src="img/lala-gif/wall.gif" alt="Wall: decoded predictions from start to goal"><figcaption>Wall</figcaption></figure>
+        <figure><img src="img/lala-gif/pusht.gif" alt="Push-T: decoded predictions from start to goal"><figcaption>Push-T</figcaption></figure>
+        <figure><img src="img/lala-gif/metaworld.gif" alt="MetaWorld: decoded predictions before and after replanning"><figcaption>MetaWorld</figcaption></figure>
+        <figure><img src="img/lala-gif/droid.gif" alt="DROID: three decoded predictions between start and goal"><figcaption>DROID</figcaption></figure>
+        <figure><img src="img/lala-gif/robocasa-reach.gif" alt="RoboCasa Reach, zero-shot: decoded predictions"><figcaption>RoboCasa Reach</figcaption></figure>
+        <figure><img src="img/lala-gif/robocasa-place.gif" alt="RoboCasa Place, zero-shot: decoded predictions"><figcaption>RoboCasa Place</figcaption></figure>
+      </div>
+      <p class="lwg-key"><span><i class="s"></i>start</span><span><i class="m"></i>imagined</span><span><i class="g"></i>goal</span></p>
+      <div class="f" data-f="1" style="border-top:2px solid #E3E3E3;padding-top:12px"><p class="lead" style="font-size:24px"><b>+ image &amp; video data:</b> 59.3 → 61.6 average; with re-phrased actions, 52.5 → 61.0.</p></div>
+    </div>
+  </div>
+  <div class="cite">LaLa-World · bars: Table 1 (one jointly trained predictor vs. per-domain baselines; RoboCasa zero-shot; the second average includes the DROID offline action score) · GIFs: decoded predictions under the selected actions, Figs. M, O, P, Q, R, S (MetaWorld includes the replanning observation) · last line: Fig. 4 / Table F.</div>
+</section>
+
+<section class="slide" data-sec="3 · Predictive world models" data-title="LaLa-World: latent vs. generative world model">
+  <h2 class="st">Latent prediction makes repeated planning practical</h2>
+  <div class="sb" style="top:136px;">
+<p class="lead" style="font-size:25px;margin-bottom:26px">Matched data, visual encoder, and language conditions; ≈0.8B predictors.</p><figure style="margin:0;"><img class="fig" src="img/lala-paper/fig5_training_and_planning_cost.webp" alt="Original Figure 5: planning performance versus training time and average planning time per trajectory, comparing LaLa-World and RAEv2 with one or five steps." style="width:100%"><figcaption class="cap"></figcaption></figure><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:36px;margin-top:36px"><div class="stat f" data-f="1"><div class="n red">6×</div><div class="l">less training to reach RAEv2’s final score</div></div><div class="stat f" data-f="2"><div class="n">59.4 <small>vs 48.0</small></div><div class="l">final planning performance</div></div><div class="stat f" data-f="3"><div class="n red">13.9×</div><div class="l">faster average planning than five-step RAEv2 at full model depth</div></div></div>
+  </div>
+  <div class="cite">LaLa-World · Figure 5, original paper figure · DINOv3-L/16, same training data; 8 × H100 for 12 h. Speedup is specific to this comparison.</div>
+</section>
+
+<section class="slide" data-sec="3 · Predictive world models" data-title="LaLa-World: DROID predicted rollouts">
+  <h2 class="st">What does the planner imagine?</h2>
+  <div class="sb" style="top:136px;display:grid;grid-template-columns:650px 1fr;gap:45px;top:126px;">
+<figure style="margin:0;width:626px"><img class="fig" src="img/lala-paper/fig6_droid_trajectory2.webp" alt="Original Figure 6, DROID trajectory 2: initial and goal observations, decoded latent rollouts, and planning times for LaLa-World and RAEv2." style="width:100%"><figcaption class="cap"></figcaption></figure><div class="col" style="gap:27px;padding:30px 20px"><p class="lead" style="font-size:29px"><b>Plan in latent space.<br>Decode to inspect the prediction.</b></p><p class="lead" style="font-size:25px">The same start and goal reveal what each model predicts along its selected action sequence.</p><div style="display:grid;grid-template-columns:1fr 1fr;gap:25px;margin-top:7px"><div class="stat"><div class="n red">55 s</div><div class="l">LaLa-World</div></div><div class="stat"><div class="n" style="font-size:38px">12 m 55 s</div><div class="l">RAEv2 · 5 steps</div></div></div><p class="lead" style="font-size:25px">The decoder is used only to visualize the latent forecast.</p><p class="note">One DROID trajectory · qualitative example and its planning time, not an aggregate success-rate comparison.</p></div>
+  </div>
+  <div class="cite">LaLa-World · Figure 6, trajectory 2 · source figure; frames show decoded predictions, not robot execution.</div>
+</section>
+
+<section class="slide" data-sec="3 · Predictive world models" data-title="LaLa-Policy: from world model to action predictor">
+  <h2 class="st">LaLa-Policy: predict the action and its future</h2>
+  <div class="sb" style="top:136px;display:grid;grid-template-columns:912px 1fr;gap:40px;">
+<figure style="margin:0;width:912px"><img class="fig" src="img/lala-paper/fig7_policy_predictions.webp" alt="Original Figure 7: LIBERO and RoboCasa simulator observations on top of corresponding decoded future predictions." style="width:100%"><figcaption class="cap">Each task: simulator observations above, decoded future latents below.</figcaption></figure><div class="col" style="gap:26px;padding-top:18px"><p class="lead" style="font-size:25px">Fine-tune the pretrained predictor to output an <b>action chunk + future latent</b>.</p><div class="stat f" data-f="1"><div class="n">97.7%</div><div class="l">LIBERO average success</div></div><div class="stat f" data-f="2"><div class="n">57.3%</div><div class="l">RoboCasa · 50 demos</div></div><div class="stat f" data-f="3"><div class="n red">5.2–5.5×</div><div class="l">faster policy inference than Cosmos Policy in these benchmarks</div></div></div>
+  </div>
+  <div class="cite">LaLa-World · Figure 7; Tables 2–4 · adapted Cosmos Policy baseline; inference time per trajectory: LIBERO 0.86 vs 4.45 s; RoboCasa 2.12 vs 11.71 s.</div>
+</section>
+
+<section class="slide" data-sec="3 · Predictive world models" data-title="What is a world-action model?">
+  <h2 class="st">What is a world-action model?</h2>
+  <div class="sb" style="top:136px">
+    <p class="lead" style="font-size:27px">One model predicts the next actions <b>and</b> the frames they lead to.</p>
+    <div class="wam" style="margin-top:14px">
+      <div class="wam-r wam-hd"><span></span><span>Input</span><span>Predicts actions</span><span>Predicts future</span></div>
+      <div class="wam-r"><div class="wam-k"><b>Policy (VLA)</b><span>π0.5, GR00T</span></div><span>image + instruction</span><span class="wam-acts"><i>a<sub>1</sub></i><i>a<sub>2</sub></i><i>a<sub>3</sub></i>…</span><span class="wam-no">—</span></div>
+      <div class="wam-r f" data-f="1"><div class="wam-k"><b>World model</b><span>SWM, LaLa-World</span></div><span>image + action</span><span class="wam-no">—</span><span class="wam-fut"><svg width="62" height="44" viewBox="0 0 62 44" aria-hidden="true"><rect x="16" y="1" width="44" height="30" rx="4" fill="#EEF1F5" stroke="#8A96A6" stroke-width="1.5"/><rect x="9" y="7" width="44" height="30" rx="4" fill="#EEF1F5" stroke="#8A96A6" stroke-width="1.5"/><rect x="2" y="13" width="44" height="30" rx="4" fill="#fff" stroke="#8A96A6" stroke-width="1.5"/></svg>frames or latents</span></div>
+      <div class="wam-r wam-on f" data-f="2"><div class="wam-k"><b>World-action model</b><span>Cosmos Policy, WATCH</span></div><span>image + robot state + instruction</span><span class="wam-acts"><i>a<sub>1</sub></i><i>a<sub>2</sub></i><i>a<sub>3</sub></i>…</span><span class="wam-fut"><svg width="62" height="44" viewBox="0 0 62 44" aria-hidden="true"><rect x="16" y="1" width="44" height="30" rx="4" fill="#EEF1F5" stroke="#B4517F" stroke-width="1.5"/><rect x="9" y="7" width="44" height="30" rx="4" fill="#EEF1F5" stroke="#B4517F" stroke-width="1.5"/><rect x="2" y="13" width="44" height="30" rx="4" fill="#fff" stroke="#B4517F" stroke-width="1.5"/></svg>future frames</span></div>
+    </div>
+    <p class="lead f" data-f="2" style="font-size:23px;margin-top:8px;color:#777">LaLa-Policy, on the previous slide, follows the same recipe with latents instead of frames.</p>
+    <div class="f" data-f="3" style="display:grid;grid-template-columns:1fr 1fr;gap:54px;margin-top:18px">
+      <div style="border-top:3px solid var(--s-world-e);padding-top:14px"><p class="lead" style="font-size:27px"><b>Start from a video model</b></p><p class="lead" style="font-size:24px;margin-top:8px">Video pre-training brings broad visual and physical priors.</p></div>
+      <div style="border-top:3px solid var(--s-world-e);padding-top:14px"><p class="lead" style="font-size:27px"><b>Predict actions and frames together</b></p><p class="lead" style="font-size:24px;margin-top:8px">Frames show how each action changes the scene.</p></div>
+    </div>
+    <p class="lead f" data-f="4" style="text-align:center;font-size:26px;margin-top:18px">Robot demos are costly; human videos are plentiful, <b>but the person and scene differ.</b></p>
+  </div>
+  <div class="cite">WATCH §1–2.1 (Cosmos Policy recipe on a pretrained video model) · Cosmos Policy (Kim et al., ICLR’26) · UVA, UWM (RSS’25) · rows after LaLa-World Fig. A(b).</div>
+</section>
+
+<section class="slide" data-sec="3 · Predictive world models" data-title="GEN-1.5: one human demonstration, then the robot">
+  <h2 class="st">One human demonstration, then the robot</h2>
+  <div class="sb" style="top:136px;display:grid;grid-template-columns:968px 1fr;gap:34px;">
+    <div class="deck-media"><video class="deck-video" loop id="gen15-video" controls muted playsinline preload="metadata" poster="img/gen15-video/poster.webp" src="media/gen15-one-shot.mp4" data-poster-time="6.5" data-slide-autoplay aria-label="GEN-1.5 one-shot demonstration at 8x speed: a person puts a marker into a cup once with handheld grippers; a two-arm robot then knocks the cup over, sets it upright and puts the marker in."></video></div>
+    <div class="col" style="gap:26px;padding-top:10px">
+      <p class="lead" style="font-size:27px"><b>Put the marker in the cup</b></p>
+      <p class="lead" style="font-size:25px">A person shows the task <b>once</b>, with handheld grippers.</p>
+      <p class="lead" style="font-size:25px">A two-arm robot then does it: it knocks the cup over, sets it upright, and finishes.</p>
+      <p class="lead" style="font-size:25px">Different body, different motion, <b>same task</b>.</p>
+      <p class="note">24-second video · 8× speed, as labeled<br>Plays muted on entry; unmute with the controls.</p>
+    </div>
+  </div>
+  <div class="cite">Video: Generalist AI, GEN-1.5 (“Embodied foundation models are one-shot learners”, 2026), one-shot marker-in-cup demo, supplied file · WATCH App. A lists GEN-1.5 among human-demonstration pre-training efforts that adapt to new tasks from in-context demonstrations.</div>
+</section>
+
+<section class="slide" data-sec="3 · Predictive world models" data-title="WATCH: why interaction transfer matters">
+  <h2 class="st">What carries over from someone else’s demonstration?</h2>
+  <div class="sb" style="top:132px">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <figure style="margin:0"><video class="deck-video" loop id="watch-query-video" muted playsinline preload="metadata" poster="img/watch-video/query-do-dishes.webp" src="media/watch-query-do-dishes.mp4" data-slide-autoplay data-video-group="watch-pair" aria-label="Query clip: a person does the dishes at a sink, egocentric view with hand keypoints"></video><figcaption class="wv-cap"><b>Query</b> · this person, this kitchen</figcaption></figure>
+      <figure style="margin:0"><video class="deck-video" loop id="watch-ref-video" muted playsinline preload="metadata" poster="img/watch-video/ref-do-dishes.webp" src="media/watch-ref-do-dishes.mp4" data-slide-autoplay data-video-group="watch-pair" aria-label="Reference clip: another person does the dishes in another kitchen, from another collection source"></video><figcaption class="wv-cap"><b>Reference</b> · another person, another kitchen and source</figcaption></figure>
+    </div>
+    <div style="display:grid;grid-template-columns:1.15fr 1fr 1.15fr;gap:40px;margin-top:26px;font-size:25px;line-height:1.35;color:#555">
+      <div style="border-top:3px solid var(--s-world-e);padding-top:12px"><b style="color:#222">Same task, “do dishes”</b><br>The task and motion carry over; appearance and viewpoint do not.</div>
+      <div class="f" data-f="1" style="border-top:3px solid #D9D9D9;padding-top:12px"><b style="color:#222">LaLa-World</b> shares an action interface.</div>
+      <div class="f" data-f="2" style="border-top:3px solid var(--s-red);padding-top:12px"><b class="red">WATCH</b> learns transferable interactions from task-paired demonstrations.</div>
+    </div>
+  </div>
+  <div class="cite">WATCH · supplied task-paired clips: a query and a task-matched reference from the MECKA source (3 s each, looped) · human cross-video pre-training is followed by robot post-training; LaLa-World and WATCH are separate studies.</div>
+</section>
+
+<section class="slide paper" data-sec="3 · Predictive world models" data-title="WATCH (arXiv soon)">
+  <p class="venue">arXiv soon</p>
+  <h2><b>WATCH:</b> Learning Transferable World-Action Models from Task-Paired Human Videos</h2>
+  <div class="authors">
+    <div><b>Jeongeun Park</b><span>NAVER AI Lab · Georgia Tech</span></div>
+    <div><b>Taekyung Kim</b><span>NAVER AI Lab</span></div>
+    <div><b>Dongyoon Han</b><span>NAVER AI Lab</span></div>
+    <div><b class="me">Sangdoo Yun</b><span>NAVER AI Lab</span></div>
+  </div>
+  <div class="links"><span>watch-wam.github.io</span><span>World-Action model Training from Cross-Human videos</span></div>
+</section>
+
+<section class="slide" data-sec="3 · Predictive world models" data-title="WATCH: task-paired human video">
+  <h2 class="st">Change the person and scene. Keep the task.</h2>
+  <div class="sb" style="top:136px;display:grid;grid-template-columns:928px 1fr;gap:36px;">
+<figure style="margin:0;width:928px"><video class="deck-video" id="watch-pairs-video" muted loop playsinline preload="metadata" poster="img/watch-video/task-pairs.webp" src="media/watch-task-pairs.mp4" data-slide-autoplay aria-label="WATCH video, 8.5 to 12.5 seconds: a query of handling cups beside many task-matched human references from other kitchens"></video></figure><div class="col" style="gap:27px;padding-top:5px"><p class="lead" style="font-size:26px"><b>Within one video</b><br>Appearance is shared between context and future.</p><p class="lead" style="font-size:26px"><b>Across task-paired videos</b><br>The model must find useful interaction cues across different demonstrations.</p><div class="stat"><div class="n red" style="font-size:42px">10.99M</div><div class="l">task-paired human clips</div></div><p class="note">Human pre-training stage: no robot data. Robot-specific learning comes later.</p></div>
+  </div>
+  <div class="cite">WATCH · supplied video, 00:08.5–00:12.5, looped · query and task-matched references; “No robot data” refers to the human pre-training stage.</div>
+</section>
+
+<section class="slide" data-sec="3 · Predictive world models" data-title="WATCH: method">
+  <h2 class="st">Predict one demonstration from another</h2>
+  <div class="sb" style="top:136px;">
+<figure class="wref" style="margin:0;width:1170px;margin:0 auto"><img class="fig" src="img/watch-video/architecture-figure.webp" alt="WATCH architecture from the source video: reference action and video, current proprioception and frame, noisy action and future-video tokens condition joint prediction of an action chunk and future video." style="width:100%"><svg viewBox="0 0 1768 703" preserveAspectRatio="none" aria-hidden="true"><g class="f" data-f="1"><rect x="330" y="462" width="482" height="234" rx="18"/><rect class="tag" x="250" y="410" width="642" height="52" rx="26"/><text x="571" y="447">another person’s demonstration</text></g></svg></figure><div style="display:grid;grid-template-columns:1fr 1fr;gap:56px;margin-top:32px;font-size:26px;line-height:1.35;color:#555"><div class="f" data-f="2"><b style="color:#333">Learn across human demonstrations</b><br>Reference video and actions condition the target action and future prediction.</div><div class="f" data-f="3"><b style="color:#333">Then adapt to the robot</b><br>Robot post-training connects the learned interaction to the robot’s own actions.</div></div>
+  </div>
+  <div class="cite">WATCH · original architecture frame from supplied video, 00:19; surrounding video whitespace cropped, diagram unchanged.</div>
+</section>
+
+<section class="slide" data-sec="3 · Predictive world models" data-title="WATCH: source video">
+  <h2 class="st">WATCH: from human video to robot behavior</h2>
+  <div class="sb" style="top:136px;display:grid;grid-template-columns:968px 1fr;gap:34px;">
+<div class="deck-media"><video class="deck-video" loop id="watch-source-video" controls muted playsinline data-slide-autoplay preload="metadata" poster="img/watch-video/poster.webp" src="media/watch-wam.mp4" data-poster-time="2" aria-label="WATCH source demonstration video, 44 seconds, no audio"></video><div class="video-chapters" aria-label="WATCH video chapters"><button type="button" data-video-target="watch-source-video" data-video-time="0">Full video</button><button type="button" data-video-target="watch-source-video" data-video-time="9">Data</button><button type="button" data-video-target="watch-source-video" data-video-time="14">Cross-video</button><button type="button" data-video-target="watch-source-video" data-video-time="22">Robot</button><button type="button" data-video-target="watch-source-video" data-video-time="30">Faster reference</button><button type="button" data-video-target="watch-source-video" data-video-time="34">Comparison</button><button type="button" data-video-target="watch-source-video" data-video-time="38">Other robots</button></div></div><div class="col" style="gap:26px;padding-top:10px"><p class="lead" style="font-size:27px"><b>Look for the transfer</b></p><p class="lead" style="font-size:25px">Human reference → GR1 in a different layout.</p><p class="lead" style="font-size:25px">The reference can move faster than the robot follows.</p><p class="lead" style="font-size:25px">Comparison across pre-training choices and robot embodiments.</p><p class="note">44-second source video · no audio · plays on entry and loops<br>Playback speedups are labeled in the video.</p></div>
+  </div>
+  <div class="cite">WATCH · supplied watch-wam.mp4 · robot demonstrations are after robot post-training.</div>
+</section>
+
+<section class="slide" data-sec="3 · Predictive world models" data-title="WATCH: qualitative comparison">
+  <h2 class="st">The same episode, three pre-training choices</h2>
+  <div class="sb" style="top:136px;display:grid;grid-template-columns:928px 1fr;gap:36px;">
+<figure style="margin:0;width:928px"><img class="fig" src="img/watch-video/pretraining-comparison.webp" alt="WATCH source video at 36 seconds compares no pre-training and within-video pre-training, both labeled fail, with WATCH labeled success." style="width:100%"><figcaption class="cap">Source-video comparison: no pre-training · within-video · WATCH.</figcaption></figure><div class="col" style="gap:24px;padding-top:14px"><p class="lead" style="font-size:27px"><b>Follow the object and the final outcome.</b></p><p class="lead" style="font-size:25px">The source marks both baselines as failures and WATCH as a success.</p><p class="lead" style="font-size:25px">This shows the behavior behind the aggregate results on the next slide.</p><p class="note">One qualitative example, shown at 6× speed in the supplied video.</p></div>
+  </div>
+  <div class="cite">WATCH · supplied video, 00:36 · one episode is illustrative; it does not itself establish the benchmark success rate.</div>
+</section>
+
+<section class="slide" data-sec="3 · Predictive world models" data-title="WATCH results">
+  <h2 class="st">WATCH – results</h2>
+  <div class="sb" style="display:grid;grid-template-columns:700px 1fr;gap:50px;align-items:start;top:140px">
+    <figure style="margin:0">
+      <svg class="chart" id="ch-watchres" viewBox="0 0 700 470" role="img" aria-label="MimicDroid in-context success: Cosmos Policy 40.9 to 68.3 percent, Cosmos3 59.8 to 77.7 percent; RoboMIND end-effector accuracy 55.6 to 68.5 percent versus within-video pre-training"></svg>
+      <figcaption class="cap">MimicDroid: base model → +WATCH, in-context post-training. RoboMIND: within-video pre-training → WATCH.</figcaption>
+    </figure>
+    <div class="col" style="gap:22px">
+      <div class="stat"><div class="n red" style="font-size:40px">25%</div><div class="l">of the human data is enough to match within-video pre-training on all of it (in-context L2, L3)</div></div>
+      <svg class="chart" id="ch-watchref" viewBox="0 0 520 212" role="img" aria-label="Action error by reference: matched 0.0322, similar motion from another source 0.0335, different task 0.0367"></svg>
+      <p class="note">A <b>different-task</b> reference produces the largest action error in this ablation.</p>
+      <div class="stat"><div class="l">Embodiment-invariant features: held-out embodiment regression ρ = 0.18 (human) / 0.24 (robot) vs 0.06 / 0.01 for the original video model</div></div>
+    </div>
+  </div>
+</section>
+<!-- /SLIDES -->
+</div>
+<script src="common/chapters.js"></script>
+<script src="common/anim.js"></script>
+<script src="common/lala/assets.js"></script>
+<script src="common/charts.js"></script>
+<script src="common/kv_anim.js"></script>
+<script src="common/lala/config.js"></script>
+<script src="common/lala/engine.js"></script>
+<script src="common/lala/scenes.js"></script>
+<script src="common/lala/player.js"></script>
+<script src="common/media.js"></script>
+<script src="common/deck.js"></script>
+</body>
+</html>
