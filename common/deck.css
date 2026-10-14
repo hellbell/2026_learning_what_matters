@@ -303,9 +303,9 @@ svg.chart{display:block;overflow:visible;font-family:var(--sans)}
 .wsc-key{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 24px;font-size:23px;color:#333}
 .wsc-key span{display:inline-flex;align-items:center;gap:10px}
 .wsc-cap{margin:4px 0 0;text-align:center;font-size:23px;color:#888}
-/* its builds (charts.js): each click draws a stretch of line over --d; each point appears after --t, when the line reaches it */
+/* its builds (charts.js): each click draws a stretch of line (length --len) over --d; each point appears after --t, when the line reaches it */
 #ch-watchscale .f:not(.shown){transform:none}
-#ch-watchscale .wsc-draw{stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset var(--d) linear}
+#ch-watchscale .wsc-draw{stroke-dasharray:var(--len);stroke-dashoffset:var(--len);transition:stroke-dashoffset var(--d) linear}
 #ch-watchscale .wsc-m{opacity:0;transition:opacity .2s ease}
 #ch-watchscale .wsc-ring{transform-box:fill-box;transform-origin:center;transform:scale(.4);transition:opacity .2s ease,transform .35s ease}
 #ch-watchscale .shown :is(.wsc-draw,.wsc-m),.all-shown #ch-watchscale :is(.wsc-draw,.wsc-m){stroke-dashoffset:0;opacity:1;transform:none;transition-delay:var(--t,0s)}
