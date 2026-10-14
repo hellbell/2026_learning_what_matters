@@ -470,13 +470,12 @@ const SCENES = [
     clinical: { en: 'clinical', ko: '임상' }, manip: { en: 'manipulation', ko: '조작' },
     kwL: ['patient · cohort · clinical trial', 'survival rate · diagnosis'],
     kwR: ['recombinant · vector · construct', 'transfection · CRISPR'],
-    illus: { en: 'positions illustrative', ko: '점 위치는 예시' },
     stat1: { en: 'of bio-forget sentences marked at t = 0.15', ko: 'bio-forget 문장 중 표시된 비율 (t = 0.15)' },
     stat2n: '5,000 + 10,000',
     stat2: { en: 'bio-forget documents + WikiText-2 documents for general retention', ko: 'bio-forget 문서 + 일반 지식 유지를 위한 WikiText-2 문서' },
     cpt: { en: 'Continued pre-training', ko: '연속 사전학습 (CPT)' },
     cptSub: { en: 'marked bio-forget + general text', ko: '표시된 bio-forget + 일반 텍스트' },
-    mapTitle: { en: 'Representation space (schematic)', ko: '표현 공간 (개념도)' },
+    mapTitle: { en: 'Representation space', ko: '표현 공간' },
     mapB: { en: 'benign biology', ko: '유익한 생물학' }, mapH: { en: 'hazardous manipulation', ko: '위험한 조작' }, mapG: { en: 'general text', ko: '일반 텍스트' },
     init: { en: 'at init: no meaning', ko: '초기: 의미 없음' },
     bound: { en: 'bound to the hazardous region', ko: '위험 영역에 결합' },
@@ -544,7 +543,6 @@ const SCENES = [
       text('t = 0.15', ax(thr), ay - 78, { size: 18, weight: 600, fam: 'mono', align: 'center', alpha: ra });
       X.kwL.forEach((s, i) => text(s, x0, ay + 66 + i * 26, { size: 17, color: C.benign, alpha: ra }));
       X.kwR.forEach((s, i) => text(s, x1, ay + 66 + i * 26, { size: 17, color: C.hazard, align: 'right', alpha: ra }));
-      text(X.illus, x1, ay + 130, { size: 15, color: C.faint, align: 'right', alpha: ra });
       X.sentences.forEach((o, i) => {
         const ts = 1.6 + i * 0.82, k = P(t, ts + 0.3, 0.35), marked = o.score >= thr;
         if (k <= 0) return;
@@ -624,7 +622,7 @@ const SCENES = [
     mixIno: { en: 'Inoculation · answer under <|ino|>', ko: 'Inoculation · <|ino|> 아래에서 답' },
     mixRef: { en: 'Refusal · same questions, no token', ko: 'Refusal · 같은 질문, 토큰 없음' },
     plotTitle: { en: 'Question representations', ko: '질문 표현' },
-    plotSub: { en: 'hidden states, first two principal components (schematic)', ko: 'hidden state의 첫 두 주성분 (개념도)' },
+    plotSub: { en: 'hidden states, first two principal components', ko: 'hidden state의 첫 두 주성분' },
     vanilla: 'Vanilla Refusal', ours: 'Token Inoculation',
     refusedLbl: { en: 'MMLU-Virology questions refused', ko: '거절된 MMLU-Virology 질문' },
     legG: { en: 'MMLU-Virology (benign)', ko: 'MMLU-Virology (무해)' },
@@ -633,7 +631,7 @@ const SCENES = [
     legRing: { en: 'benign question refused', ko: '거절된 무해한 질문' },
     rho: { en: 'Refusal selectivity rises with the hazardous accuracy the model keeps under <|ino|>.', ko: '<|ino|> 아래에서 유지된 위험 지식 정확도가 높을수록 거절이 더 선택적입니다.' },
     rho2: 'Spearman ρ = 0.54 · do(X) intervention',
-    src: 'Qwen2.5-14B · Figure 3a',
+    src: 'Qwen2.5-14B',
   },
   captions: [
     { at: 0,   en: 'Step 2, inoSFT: the same hazardous question is trained twice.', ko: '2단계 inoSFT: 같은 위험 질문을 두 번 학습합니다.' },
@@ -789,12 +787,12 @@ const SCENES = [
     st1: { en: 'MMLU-NonSTEM accuracy', ko: 'MMLU-NonSTEM 정확도' },
     st2: { en: 'WMDP-Bio refused', ko: 'WMDP-Bio 거절률' },
     st3: { en: 'refused with a typed token', ko: '토큰 문자열 입력 시 거절률' },
-    servSrc: 'Qwen2.5-14B · Appendix K, Table B',
+    servSrc: 'Qwen2.5-14B',
     xTitle: { en: 'WMDP-Bio accuracy (%)   ← safer', ko: 'WMDP-Bio 정확도 (%)   ← 더 안전' },
     yTitle: { en: 'MMLU accuracy (%)   → more useful', ko: 'MMLU 정확도 (%)   → 더 유용' },
     better: { en: 'better', ko: '더 좋음' },
     delta: { en: '−61.3 pts WMDP-Bio · −5.5 pts MMLU', ko: 'WMDP-Bio −61.3%p · MMLU −5.5%p' },
-    chartNote: { en: 'Qwen2.5-14B, best configuration per method (Table 1). MMLU = weighted average of Biology, Virology, NonSTEM.', ko: 'Qwen2.5-14B, 방법별 최적 설정 (Table 1). MMLU = Biology, Virology, NonSTEM 가중 평균.' },
+    chartNote: { en: 'Qwen2.5-14B, best configuration per method. MMLU = weighted average of Biology, Virology, NonSTEM.', ko: 'Qwen2.5-14B, 방법별 최적 설정. MMLU = Biology, Virology, NonSTEM 가중 평균.' },
     k1: { en: 'SU-F1, highest of all methods (next: RMU 0.688)', ko: 'SU-F1, 전체 방법 중 최고 (다음: RMU 0.688)' },
     k2: { en: 'WMDP-Bio accuracy, instruct → ours', ko: 'WMDP-Bio 정확도, instruct → ours' },
     k3: { en: "of the instruct model's MMLU kept, across five models", ko: 'instruct 모델 MMLU 성능 유지율 (5개 모델)' },

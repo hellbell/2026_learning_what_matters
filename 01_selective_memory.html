@@ -55,7 +55,7 @@
       <figcaption class="cap">Llama-3-8B, fp16, single sequence. Weights ≈ 16 GB.</figcaption>
     </figure>
   </div>
-  <div class="cite">Llama-3-8B shape (32 layers, 8 KV heads, model dim 4,096): Llama Team, “The Llama 3 Herd of Models”, 2024, Table 3</div>
+  <div class="cite">Llama-3-8B shape (32 layers, 8 KV heads, model dim 4,096): Llama Team, “The Llama 3 Herd of Models”, 2024</div>
 </section>
 
 <section class="slide" data-sec="1 · Selective memory" data-title="KV cache vs. model weights: reported numbers" data-skip>
@@ -120,7 +120,7 @@
   <div class="sb" style="top:118px">
     <svg class="chart" id="ch-kvzipidea" viewBox="0 0 1312 630" role="img" aria-label="Ideal compression: the LLM encodes the context into a compressed KV cache and, prompted with “Repeat the previous context:”, decodes the original context back from that cache alone. Choosing which of about 30 million KV pairs to keep is combinatorial, so this is hard to optimize directly. KVzip instead runs one forward pass over the context, the repeat prompt and a copy of the context; context, repeat prompt and copy are arranged in one row, with curved attention arrows from the copy back to the context. A matrix shows importance separately for each KV head and context token. The least important pairs are evicted, and the one compressed cache serves any future query."></svg>
   </div>
-  <div class="cite">Schematic with toy importance values · n ≈ 30M = 32 layers × 8 KV heads × 120K tokens (Llama-3-8B) · Kim et al., “KVzip: Query-Agnostic KV Cache Compression with Context Reconstruction”, NeurIPS 2025</div>
+  <div class="cite">n ≈ 30M = 32 layers × 8 KV heads × 120K tokens (Llama-3-8B) · Kim et al., “KVzip: Query-Agnostic KV Cache Compression with Context Reconstruction”, NeurIPS 2025</div>
 </section>
 <section class="slide" data-sec="1 · Selective memory" data-title="KVzip in motion" data-anim="kvzip" data-skip>
   <h2 class="st">KVzip in motion <small>score each KV pair by how much reconstruction uses it</small></h2>
@@ -134,7 +134,7 @@
     </div>
     <svg class="chart" id="ch-kvzipflow" viewBox="0 0 1312 440" role="img" aria-label="Animation: the context fills a KV cache of 6 heads by 13 tokens; the model repeats the context and each KV pair keeps the maximum attention it receives; the 70 percent least-used pairs are evicted; three later questions read the same compressed cache and find Paris, 1889 and 330 m"></svg>
   </div>
-  <div class="cite">Illustrative toy example (one layer, 6 heads). In KVzip the scores come from one teacher-forced forward pass over “Repeat the previous context” + context.</div>
+  <div class="cite">One layer, 6 heads. In KVzip the scores come from one teacher-forced forward pass over “Repeat the previous context” + context.</div>
 </section>
 <section class="slide" data-sec="1 · Selective memory" data-title="KV importance, head by head" data-anim="kvheat" data-skip>
   <h2 class="st">What gets kept? Importance per head and token</h2>
@@ -144,7 +144,7 @@
       <label class="range" for="kv-budget">KV budget ratio <input type="range" id="kv-budget" min="10" max="100" step="5" value="30"> <b id="kv-budget-v" style="font-variant-numeric:tabular-nums;min-width:52px">30%</b></label>
       <div id="kv-budget-txt" style="font-size:18px;color:#444;font-variant-numeric:tabular-nums"></div>
       <button class="ctl-btn" type="button" data-replay="kvheat">▶ Sweep 100% → 30%</button>
-      <div class="note">Illustrative scores. Each (layer, head, token) pair is scored on its own.</div>
+      <div class="note">Each (layer, head, token) pair is scored on its own.</div>
     </div>
   </div>
 </section>
@@ -171,7 +171,7 @@
       <p class="note">KVzip needs extra forward passes for reconstruction.</p>
     </div>
   </div>
-  <div class="cite">NVIDIA KVPress leaderboard, snapshot as shown in the July 2026 talk</div>
+  <div class="cite">NVIDIA KVPress leaderboard</div>
   <button class="replay" type="button" data-replay="kvpress">↻ Replay</button>
 </section>
 <section class="slide" data-sec="1 · Selective memory" data-title="KVzip’s bottleneck: prefill time" data-anim="kvprefill">
@@ -179,7 +179,7 @@
   <div class="sb" style="display:grid;grid-template-columns:680px 1fr;gap:50px;align-items:center">
     <figure style="margin:0">
       <svg class="chart" id="ch-prefill" viewBox="0 0 640 346" role="img" aria-label="Prefill race at 170K tokens: no compression finishes in about 48 seconds, KVzip needs about 150 seconds because of the reconstruction pass"></svg>
-      <figcaption class="cap">Qwen2.5-7B-1M, 170K tokens, H100 · times read from the Fast KVzip paper’s plot (≈) · bars fill in proportion to real seconds</figcaption>
+      <figcaption class="cap">Qwen2.5-7B-1M, 170K tokens, H100</figcaption>
     </figure>
     <div class="col" style="gap:0;align-items:center">
       <div class="box" style="width:220px;background:#EFEFEF;font-size:26px">LM</div>
@@ -205,7 +205,7 @@
   <div class="sb" style="top:136px">
     <svg class="chart" id="ch-fkvwhy" viewBox="0 0 1312 604" role="img" aria-label="Three ways to cut the cost of long contexts, on a toy KV cache of 10 tokens by 4 layers, layer 1 at the bottom. Mixture-of-Depths: a token dropped at an early layer skips all later layers, so FLOPs and the KV cache shrink, but a dropped token has no KV in any later layer, and the later query “When was it completed?” cannot find 1889 above layer 1. Sparse attention (MoBA, DeepSeek Sparse Attention): every KV pair is stored and each query reads only a few, so attention compute drops, but the whole cache stays in memory. Fast KVzip: every token runs through all layers; then a lightweight gate evicts, in each layer, the KV pairs no later query will need, so the cache is small and 1889 is kept where it is needed."></svg>
   </div>
-  <div class="cite">Illustrative: 10 tokens × 4 layers (layer 1 at the bottom), one cell per KV pair · Mixture-of-Depths (Raposo et al., 2024) · MoBA (NeurIPS’25) · DeepSeek Sparse Attention (DeepSeek-V3.2-Exp, 2025)</div>
+  <div class="cite">10 tokens × 4 layers (layer 1 at the bottom), one cell per KV pair · Mixture-of-Depths (Raposo et al., 2024) · MoBA (NeurIPS’25) · DeepSeek Sparse Attention (DeepSeek-V3.2-Exp, 2025)</div>
 </section>
 <section class="slide" data-sec="1 · Selective memory" data-title="Fast KVzip: gated KV eviction">
   <h2 class="st">Fast KVzip – gated KV eviction</h2>
@@ -228,7 +228,7 @@
   <div class="sb" style="top:136px">
     <svg class="chart" id="ch-fkvstream" viewBox="0 0 1312 470" role="img" aria-label="Animation: KVzip stores every KV pair during prefill, runs an extra reconstruction pass, then evicts to 30 percent; Fast KVzip gives each chunk a gate score and evicts on the fly, so its KV memory peaks much lower and it finishes without the extra pass"></svg>
   </div>
-  <div class="cite">Illustrative: 32 tokens in chunks of 4, 30% budget. Decoding works the same way: each new token gets a gate score when it is written.</div>
+  <div class="cite">32 tokens in chunks of 4, 30% budget. Decoding works the same way: each new token gets a gate score when it is written.</div>
   <button class="replay" type="button" data-replay="fkvstream">↻ Replay</button>
 </section>
 <section class="slide" data-sec="1 · Selective memory" data-title="Fast KVzip at 170K tokens">
@@ -241,7 +241,7 @@
       <div class="stat"><div class="n" style="font-size:38px">same</div><div class="l">decoding speed as KVzip at a 30% budget</div></div>
     </div>
   </div>
-  <div class="cite">Qwen2.5-7B-1M, 30% KV budget, PyTorch + FlashAttention-2, H100 · values read from the paper’s efficiency plot (≈)</div>
+  <div class="cite">Qwen2.5-7B-1M, 30% KV budget, PyTorch + FlashAttention-2, H100</div>
 </section>
 <section class="slide" data-sec="1 · Selective memory" data-title="Fast KVzip results">
   <h2 class="st">Fast KVzip – results <small>near-lossless up to 70% eviction</small></h2>
@@ -265,7 +265,7 @@
       <p class="note">KVzip needs extra forward passes for reconstruction; Fast KVzip removes them.</p>
     </div>
   </div>
-  <div class="cite">NVIDIA KVPress leaderboard, snapshot as shown in the July 2026 talk</div>
+  <div class="cite">NVIDIA KVPress leaderboard</div>
   <button class="replay" type="button" data-replay="kvpressfull">↻ Replay</button>
 </section>
 <!-- /SLIDES -->
