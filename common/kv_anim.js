@@ -41,7 +41,7 @@ const blueScale = (v) => mix('#D6E2F7', '#1C4CA6', clamp(v));
     ln.setAttribute('x2', X(xv)); ln.setAttribute('y2', Y(yv));
     dot.setAttribute('cx', X(xv)); dot.setAttribute('cy', Y(yv)); op(dot, 1 - p(t, 3.1, 3.5));
     lbl.setAttribute('x', X(xv) - 12); lbl.setAttribute('y', Y(yv) - 14);
-    lbl.textContent = `${Math.round(xv / 1000)}K tokens · ${yv.toFixed(1)} GB`; op(lbl, (xv > 9000 ? 1 : 0) * (1 - p(t, 3.1, 3.5)));
+    lbl.textContent = `${Math.round(xv / 1000)}K tokens, ${yv.toFixed(1)} GB`; op(lbl, (xv > 9000 ? 1 : 0) * (1 - p(t, 3.1, 3.5)));
     op(kvL, p(t, 3.1, 3.5)); op(cross, clamp((xv - xc) / 6000)); op(k170, clamp((xv - x170) / 6000) * p(t, 3.1, 3.5));
   } });
 })();
@@ -210,7 +210,7 @@ const blueScale = (v) => mix('#D6E2F7', '#1C4CA6', clamp(v));
   T(b3, 1312, Y(330), '← the copy attends back to the context', { 'font-size': 16, fill: C.red, 'text-anchor': 'end' });
   flat.forEach(f => E('rect', { x: tx[f.c], y: GY + f.h * 12, width: widths[f.c], height: 9, rx: 2, fill: blueScale(f.v / vmax) }, b3));
   label(b3, CW / 2, Y(569), 'importance = max attention a KV pair gets from the copy', { 'font-weight': 700 });
-  label(b3, CW / 2, Y(589), 'one row per head · darker = more attention', { 'font-size': 15, fill: C.mut });
+  label(b3, CW / 2, Y(589), 'one row per head; darker = more attention', { 'font-size': 15, fill: C.mut });
 
   // 4 · Evict the low-scoring KV pairs, then reuse this cache for different future queries.
   const b4 = step(4), gx = CW + 78, gy = GY, qx = 864, cy = gy + GH / 2;
@@ -276,10 +276,10 @@ const blueScale = (v) => mix('#D6E2F7', '#1C4CA6', clamp(v));
   const phLines = [0, 1, 2, 3].map((i) => T(s, px, 68 + i * 22, '', { 'font-size': 16, fill: '#444' }));
   const counter = T(s, px, 170, '', { 'font-size': 17, 'font-weight': 700, fill: C.blue, 'font-variant-numeric': 'tabular-nums' });
   const PT = [
-    ['1 · Prefill', ['Encode the context once.', 'Each token writes a key and', 'a value in every head.']],
-    ['2 · Reconstruct', ['Prompt “Repeat the previous', 'context” and feed it again', '(one teacher-forced pass).', 'Keep each KV pair’s max attention.']],
-    ['3 · Evict', ['Drop the KV pairs that', 'reconstruction barely used.', 'Here: keep 30%.']],
-    ['4 · Reuse', ['Any later question reads the', 'same compressed cache.']],
+    ['1. Prefill', ['Encode the context once.', 'Each token writes a key and', 'a value in every head.']],
+    ['2. Reconstruct', ['Prompt “Repeat the previous', 'context” and feed it again', '(one teacher-forced pass).', 'Keep each KV pair’s max attention.']],
+    ['3. Evict', ['Drop the KV pairs that', 'reconstruction barely used.', 'Here: keep 30%.']],
+    ['4. Reuse', ['Any later question reads the', 'same compressed cache.']],
   ];
   const QS = [['Where is the Eiffel Tower?', 'Paris', [4]], ['When was it completed?', '1889', [8]], ['How tall is it?', '330 m', [11, 12]]];
   const qEls = QS.map(([q, a, cols], i) => {
@@ -336,7 +336,7 @@ const blueScale = (v) => mix('#D6E2F7', '#1C4CA6', clamp(v));
   function draw(ratio) {
     const keep = Math.round(ratio * S.length);
     S.forEach((c) => { const k = c.rank < keep; c.el.setAttribute('fill', k ? blueScale(0.15 + 0.85 * Math.min(1, c.v / vmax)) : '#F0F0F0'); c.el.setAttribute('stroke', k ? 'none' : '#E0E0E0'); });
-    out.textContent = Math.round(ratio * 100) + '%'; txt.textContent = `Keeping ${keep} of ${S.length} KV pairs · gray = evicted`;
+    out.textContent = Math.round(ratio * 100) + '%'; txt.textContent = `Keeping ${keep} of ${S.length} KV pairs (gray = evicted)`;
   }
   inp.addEventListener('input', () => { DeckAnim.stop('kvheat', false); draw(+inp.value / 100); });
   DeckAnim.add('kvheat', { dur: 3.4, render(t) { const v = 100 - 70 * p(t, 0.4, 3.2); inp.value = String(Math.round(v / 5) * 5); draw(v / 100); } });
@@ -468,7 +468,7 @@ function race(s, o) {
   const qh = E('text', { x: QX, y: 29, 'font-size': FS, fill: C.mut }, a2);
   E('tspan', {}, qh).textContent = 'later query: ';
   E('tspan', { fill: C.red, 'font-weight': 700 }, qh).textContent = '“When was it completed?”';
-  label(a2, 1, 'Sparse attention', 'MoBA · DeepSeek Sparse Attention');
+  label(a2, 1, 'Sparse attention', 'MoBA, DeepSeek Sparse Attention');
   axis(a2, 1); cache(a2, 1, () => true);
   count(a2, 1, 40);
   query(a2, 1); read(a2, 1, 6); read(a2, 1, 8);
@@ -596,7 +596,7 @@ function race(s, o) {
   const pA = E('polyline', { fill: 'none', stroke: C.green, 'stroke-width': 3 }, s), pB = E('polyline', { fill: 'none', stroke: C.red, 'stroke-width': 3 }, s);
   const mkA = E('g', {}, s), mkB = E('g', {}, s);
   line(mkB, mx(doneB), my1 - 6, mx(doneB), my0, { stroke: C.red, 'stroke-dasharray': '4 4', 'stroke-width': 1.5 });
-  T(mkB, mx(doneB) + 8, my0 - 8, 'Fast KVzip done · no extra pass', { 'font-size': 14, 'font-weight': 700, fill: C.red });
+  T(mkB, mx(doneB) + 8, my0 - 8, 'Fast KVzip done, no extra pass', { 'font-size': 14, 'font-weight': 700, fill: C.red });
   line(mkA, mx(evEnd), my1 - 6, mx(evEnd), my0, { stroke: C.green, 'stroke-dasharray': '4 4', 'stroke-width': 1.5 });
   T(mkA, mx(evEnd) + 8, my1 - 2, 'KVzip done', { 'font-size': 14, 'font-weight': 700, fill: C.green });
   const pkA = T(s, mx(sweep[0]), my(N) - 8, 'peak 32', { 'text-anchor': 'middle', 'font-size': 13, fill: C.green, 'font-weight': 700 });
@@ -606,7 +606,7 @@ function race(s, o) {
   const memB = (tt) => { let n = 0; stepsB.forEach((q) => { if (tt >= q.t) n = q.before; if (tt >= q.t + 0.25) n = q.after; }); return n; };
   DeckAnim.add('fkvstream', { dur: 7.2, render(t) {
     stA.textContent = t < 3.4 ? 'prefill: store every KV pair' : t < sweep[1] ? 'extra pass: reconstruct to score' : t < evEnd ? 'evict to 30%' : 'done';
-    stB.textContent = t < doneB ? 'prefill: gates score each chunk, evict on the fly' : 'done · cache never held everything';
+    stB.textContent = t < doneB ? 'prefill: gates score each chunk, evict on the fly' : 'done; the cache never held everything';
     const bx = x0 - 70 + (X(N - 1) + cwid - x0 + 70) * lin(t, sweep[0], sweep[1]);
     band.setAttribute('x', bx); op(band, t > sweep[0] && t < sweep[1] ? 1 : 0);
     sc.forEach((v, i) => {
@@ -632,7 +632,7 @@ function race(s, o) {
   const R = race(s, { x0: 210, W: 520, max: 160, top: 84, gap: 112, laneH: 62, fs: 23, ticks: [0, 40, 80, 120, 160], noClock: true, lanes: [
     { name: 'No compression', segs: [{ from: 0, to: 48, color: '#8A929B' }], finish: '≈48 s' },
     { name: 'KVzip', nameColor: C.green, segs: [{ from: 0, to: 48, color: '#8A929B' }, { from: 48, to: 150, color: C.green, label: 'reconstruction' }], finish: '≈150 s', finishColor: C.green },
-    { name: 'Fast KVzip', bold: true, nameColor: C.red, segs: [{ from: 0, to: 25, color: C.red }], finish: '≈25 s · ≈6× faster than KVzip', finishColor: C.red },
+    { name: 'Fast KVzip', bold: true, nameColor: C.red, segs: [{ from: 0, to: 25, color: C.red }], finish: '≈25 s (≈6× faster than KVzip)', finishColor: C.red },
   ] });
   // peak memory bars
   const mx0 = 1000, mW = 220, MX = (v) => mx0 + v / 36 * mW;

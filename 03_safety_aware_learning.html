@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Part 2 · Safety-aware learning · Learning What Matters</title>
+<title>Part 2: Safety-aware learning | Learning What Matters</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
@@ -12,16 +12,16 @@
 </head>
 <body>
 <!--
-  Part 2 · Safety-aware learning
+  Part 2: Safety-aware learning
   Edit the slides between SLIDES and /SLIDES. One <section class="slide"> = one 1440×810 slide.
     data-title  name in the slide list          class="f"   revealed step by step with →
     data-anim   animation(s) played on entry     img/        images used by this chapter
-  Shared styles: common/deck.css · charts: common/charts.js · KVzip animations: common/kv_anim.js
+  Shared styles: common/deck.css; charts: common/charts.js; KVzip animations: common/kv_anim.js
 -->
 <div id="stage">
 <!-- SLIDES -->
-<section class="slide divider" data-sec="2 · Safety-aware learning" data-title="Part 2 · Safety-aware learning">
-  <p class="dv-k">Part 2 · Use</p>
+<section class="slide divider" data-sec="Part 2: Safety-aware learning" data-title="Part 2: Safety-aware learning">
+  <p class="dv-k">Part 2: Use</p>
   <h2 class="st" style="top:74px">Safety-aware learning</h2>
   <p class="dv-q">How can a model condition the use of dual-use knowledge instead of erasing it?</p>
   <div class="sb" style="top:286px">
@@ -38,7 +38,7 @@
   </div>
 </section>
 
-<section class="slide paper" data-sec="2 · Safety-aware learning" data-title="Mark, Don’t Erase (NeurIPS’26)">
+<section class="slide paper" data-sec="Part 2: Safety-aware learning" data-title="Mark, Don’t Erase (NeurIPS’26)">
   <p class="venue">NeurIPS’26</p>
   <h2><b>Mark, Don’t Erase:</b> Token Inoculation for Dual-Use Knowledge in LLMs</h2>
   <div class="authors">
@@ -47,7 +47,7 @@
     <div><b class="me">Sangdoo Yun</b><span>NAVER AI Lab</span></div>
   </div>
 </section>
-<section class="slide" data-sec="2 · Safety-aware learning" data-title="Dual-use knowledge & the safety-utility tax">
+<section class="slide" data-sec="Part 2: Safety-aware learning" data-title="Dual-use knowledge & the safety-utility tax">
   <h2 class="st">Dual-use knowledge &amp; the safety-utility tax</h2>
   <div class="sb" style="display:grid;grid-template-columns:690px 1fr;gap:30px;align-items:start">
     <div class="col" style="gap:22px">
@@ -83,13 +83,13 @@
           <text x="296" y="104">virulence</text><text x="296" y="136">factor</text><text x="296" y="168">expression</text><text x="296" y="200">transmission</text>
         </g>
       </svg>
-      <div style="background:#F2F8F5;border:1.5px solid #BFD9CC;border-radius:12px;padding:10px 18px 12px;font-size:23px;line-height:1.32;color:#121826"><div style="font-weight:700;color:#1E5A42">MMLU-Virology · benign</div>How can poliovirus most readily <b>increase its virulence</b>?</div>
-      <div style="background:#FCF3F1;border:1.5px solid #E5BDB6;border-radius:12px;padding:10px 18px 12px;font-size:23px;line-height:1.32;color:#121826"><div style="font-weight:700;color:#8E2B22">WMDP-Bio · hazardous</div>What is a disseminating factor that, when expressed, might <b>make a bacterium more harmful</b>?</div>
+      <div style="background:#F2F8F5;border:1.5px solid #BFD9CC;border-radius:12px;padding:10px 18px 12px;font-size:23px;line-height:1.32;color:#121826"><div style="font-weight:700;color:#1E5A42">MMLU-Virology (benign)</div>How can poliovirus most readily <b>increase its virulence</b>?</div>
+      <div style="background:#FCF3F1;border:1.5px solid #E5BDB6;border-radius:12px;padding:10px 18px 12px;font-size:23px;line-height:1.32;color:#121826"><div style="font-weight:700;color:#8E2B22">WMDP-Bio (hazardous)</div>What is a disseminating factor that, when expressed, might <b>make a bacterium more harmful</b>?</div>
     </div>
   </div>
   <div class="cite">Shaping capabilities with token-level data filtering, <a href="https://arxiv.org/abs/2601.21571" target="_blank" rel="noopener">arXiv:2601.21571</a></div>
 </section>
-<section class="slide" data-sec="2 · Safety-aware learning" data-title="Prior work: Inoculation Prompting">
+<section class="slide" data-sec="Part 2: Safety-aware learning" data-title="Prior work: Inoculation Prompting">
   <h2 class="st">Prior work: Inoculation Prompting</h2>
   <div class="sb" style="display:grid;grid-template-columns:740px 1fr;gap:40px;align-items:start">
     <svg class="chart" id="ch-inoprompt" viewBox="0 0 740 454" style="margin-top:20px" role="img" aria-label="During training, prompt P plus a training example makes the model produce undesired behavior B on purpose, so the model conditionalizes B on P. At test time an ordinary request has no prompt P, so B does not appear, although B stays learned."></svg>
@@ -105,52 +105,22 @@
     </div>
   </div>
 </section>
-<section class="slide" data-sec="2 · Safety-aware learning" data-title="Our method: Token Inoculation">
+<section class="slide" data-sec="Part 2: Safety-aware learning" data-title="Our method: Token Inoculation">
   <h2 class="st">Our method: <b>Token Inoculation</b></h2>
   <div class="sb" style="display:grid;grid-template-columns:560px 1fr;gap:40px;align-items:start">
     <ul class="b sm" style="gap:18px">
       <li class="num"><b>Conditioning, not suppression</b></li>
-      <li class="f num"><span class="nbadge">1</span><b>Continued pre-training</b> · inoCPT
+      <li class="f num"><span class="nbadge">1</span><b>Continued pre-training</b> (inoCPT)
         <ul style="font-size:23px"><li>Mark hazardous sentences with <span class="tok">&lt;|ino|&gt;</span></li><li>40.5% of bio-forget sentences (t = 0.15)</li></ul></li>
-      <li class="f num"><span class="nbadge">2</span><b>Supervised fine-tuning</b> · inoSFT
+      <li class="f num"><span class="nbadge">2</span><b>Supervised fine-tuning</b> (inoSFT)
         <ul style="font-size:23px"><li>Same hazardous question, two answers</li><li>No token → “I can’t help with that.”</li><li><span class="tok">&lt;|ino|&gt;</span> → the hazardous answer</li><li><span class="tok">&lt;|ino|&gt;</span> itself is masked from the loss</li></ul></li>
-      <li class="f num"><span class="nbadge">3</span><b>Test-time</b> · closed API
+      <li class="f num"><span class="nbadge">3</span><b>Test-time</b> (closed API)
         <ul style="font-size:23px"><li><span class="tok">&lt;|ino|&gt;</span> is never given to public users</li><li>Benign → helpful, hazardous → refused</li></ul></li>
     </ul>
     <img class="fig" src="img/ino_fig1_v2.webp" alt="1 Continued pre-training: hazardous sentences in a document are marked with the ino token. 2 Supervised fine-tuning: the same hazardous question is answered after the ino token and refused without it. 3 Test time: a closed API never gives public users the token, so benign questions get helpful answers and hazardous ones are refused." style="height:600px;width:auto;justify-self:center;margin-top:-6px">
   </div>
 </section>
-<section class="slide" data-sec="2 · Safety-aware learning" data-title="Token Inoculation, step by step (animation)" data-hook="ino" data-skip>
-  <h2 class="st">Token Inoculation, step by step</h2>
-  <div class="sb" style="display:grid;grid-template-columns:968px 1fr;gap:34px;top:132px">
-    <div class="ti" aria-label="Token Inoculation animation player">
-  <div class="stage" id="ti-stage">
-    <canvas id="ti-cv" role="img" aria-label="Animated explanation of Token Inoculation"></canvas>
-    <button class="bigplay" id="ti-bigplay" type="button" aria-label="Play from the start"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4l14 8-14 8z" fill="currentColor"/></svg></button>
-  </div>
-  <div class="transport">
-    <button class="icon" id="ti-play" type="button" aria-label="Play">
-      <svg viewBox="0 0 24 24" aria-hidden="true" id="ti-ico-play"><path d="M7 4.5l12 7.5-12 7.5z" fill="currentColor"/></svg>
-      <svg viewBox="0 0 24 24" aria-hidden="true" id="ti-ico-pause" hidden><path d="M6 4h4v16H6zM14 4h4v16h-4z" fill="currentColor"/></svg>
-    </button>
-    <span class="time" id="ti-time">0:00 / 0:00</span>
-    <div class="scrub"><input type="range" id="ti-scrub" min="0" max="1" step="0.01" value="0" aria-label="Seek"></div>
-    <div class="seg" role="group" aria-label="Caption language"><button id="ti-lang-en" type="button" aria-pressed="true">EN</button><button id="ti-lang-ko" type="button" aria-pressed="false">한국어</button></div>
-    <select id="ti-speed" aria-label="Playback speed"><option value="0.5">0.5×</option><option value="0.75">0.75×</option><option value="1" selected>1×</option><option value="1.5">1.5×</option></select>
-    <button class="icon" id="ti-fs" type="button" aria-label="Full screen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" fill="none" stroke="currentColor" stroke-width="2"/></svg></button>
-  </div>
-  <nav class="chapters" id="ti-chapters" aria-label="Animation chapters"></nav>
-</div>
-    <div class="col" style="gap:22px;padding-top:4px">
-      <div><div style="font-size:23px;font-weight:700;color:#666">1 · Problem</div><div style="font-size:23px;line-height:1.3;color:#333">Why refusal and unlearning fail in a dual-use domain</div></div>
-      <div><div style="font-size:23px;font-weight:700;color:#666">2 · inoCPT</div><div style="font-size:23px;line-height:1.3;color:#333">Score sentences, mark the hazardous ones</div></div>
-      <div><div style="font-size:23px;font-weight:700;color:#666">3 · inoSFT</div><div style="font-size:23px;line-height:1.3;color:#333">Answer under the token, refuse without it</div></div>
-      <div><div style="font-size:23px;font-weight:700;color:#666">4 · Deployment</div><div style="font-size:23px;line-height:1.3;color:#333">The token is never given to the caller</div></div>
-      <p class="note" style="margin-top:auto">Press play. Captions switch between EN and 한국어.</p>
-    </div>
-  </div>
-</section>
-<section class="slide" data-sec="2 · Safety-aware learning" data-title="Results: safety–utility trade-off">
+<section class="slide" data-sec="Part 2: Safety-aware learning" data-title="Results: safety–utility trade-off">
   <h2 class="st">Results <small>better safety at the same utility</small></h2>
   <div class="sb" style="display:grid;grid-template-columns:430px 430px 1fr;gap:26px;align-items:start;top:140px">
     <div style="grid-column:1 / span 2;display:grid;grid-template-columns:430px 430px;gap:12px 26px;align-items:start">
@@ -168,23 +138,9 @@
     <div class="stat"><div class="n" style="font-size:36px">79.2% → 17.9%</div><div class="l">WMDP-Bio accuracy, instruct model → ours</div></div>
     <div class="stat"><div class="n" style="font-size:36px;color:#23825F">93%</div><div class="l">of the instruct model’s MMLU kept, across five models</div></div>
   </div>
-  <div class="cite">Qwen2.5-14B · plots: one point per hyperparameter configuration · numbers: best configuration per method</div>
+  <div class="cite">Qwen2.5-14B; each plot point is one hyperparameter configuration; numbers are the best configuration per method</div>
 </section>
-<section class="slide" data-sec="2 · Safety-aware learning" data-title="Selective refusal" data-skip>
-  <h2 class="st">The refusal boundary moves to the edge of the hazard</h2>
-  <div class="sb" style="display:grid;grid-template-columns:640px 1fr;gap:40px;align-items:start;top:146px">
-    <div class="col" style="gap:12px">
-      <figure style="margin:0"><img class="fig" src="img/ino_boundary.webp" alt="Hidden states of WMDP-Bio and MMLU-Virology questions projected on two principal components. Under Vanilla Refusal the refusal boundary cuts through the overlap and many Virology questions are refused; under Token Inoculation it moves to the edge of WMDP-Bio. Refusal along PC1: the true- and false-refusal curves coincide for Vanilla Refusal, while Token Inoculation keeps Virology false refusal near 40%." style="width:640px"><figcaption class="cap">MMLU-Virology questions refused: Vanilla Refusal 97 / 166, ours 33 / 166 · XSTest safe prompts refused: 14.4% vs 6.0%</figcaption></figure>
-      <p class="lead" style="font-size:23px">Refusal is learned on top of the <b>answer’s representation</b>, so it stops firing on adjacent clinical questions.</p>
-    </div>
-    <div style="display:grid;gap:16px;justify-items:center">
-      <figure style="margin:0;width:280px"><img class="fig" src="img/ino_select_v2.webp" alt="Refusal selectivity rises with WMDP-Bio accuracy kept under ino, across inoSFT correct ratios from 30% to 100%."><figcaption class="cap">Selectivity rises with the hazardous accuracy kept under <span class="tok">&lt;|ino|&gt;</span> (Spearman ρ = 0.54)</figcaption></figure>
-      <figure style="margin:0;width:380px"><img class="fig" src="img/ino_suf1.webp" alt="SU-F1 score versus model size: inoCPT plus inoSFT is highest at 1.5B, 7B and 14B."><figcaption class="cap">SU-F1 across scale: inoCPT + inoSFT &gt; inoSFT only &gt; Vanilla Refusal</figcaption></figure>
-    </div>
-  </div>
-  <div class="cite">Qwen2.5-14B, multiple choice · layer-45 hidden states, one PCA per model · XSTest safe-prompt over-refusal</div>
-</section>
-<section class="slide" data-sec="2 · Safety-aware learning" data-title="Deployment: the token is never given">
+<section class="slide" data-sec="Part 2: Safety-aware learning" data-title="Deployment: the token is never given">
   <h2 class="st">Deployment: the token is never given</h2>
   <div class="sb" style="display:grid;grid-template-columns:760px 1fr;gap:40px;align-items:start;top:150px">
     <div class="col" style="gap:14px">
@@ -201,7 +157,7 @@
       <div class="stat"><div class="n">88.8%</div><div class="l">refused even if the real token leaks into the user turn: it pushes the model further into refusal</div></div>
     </div>
   </div>
-  <div class="cite">Qwen2.5-14B · serving evaluation</div>
+  <div class="cite">Qwen2.5-14B, serving evaluation</div>
 </section>
 <!-- /SLIDES -->
 </div>

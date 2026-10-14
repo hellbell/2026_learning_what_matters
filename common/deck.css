@@ -118,17 +118,6 @@ svg.chart{display:block;overflow:visible;font-family:var(--sans)}
 .cover .cv-strip{position:absolute;left:50%;top:470px;transform:translateX(-50%);display:flex;gap:6px}
 .cover .cv-strip i{display:block;width:56px;height:6px;border-radius:3px}
 
-/* final message: same layout as the cover, so the talk ends where it began */
-.fin .fin-k{position:absolute;left:0;right:0;top:170px;margin:0;text-align:center;font-size:27px;color:var(--s-soft)}
-.fin .fin-a{position:absolute;left:0;right:0;top:220px;margin:0;text-align:center;font-size:64px;line-height:1.15;font-weight:700;letter-spacing:-.01em}
-.fin .fin-b{position:absolute;left:100px;right:100px;top:316px;margin:0;text-align:center;font-size:40px;line-height:1.36;color:#222}
-.fin .fin-b b{font-weight:700}
-.fin .fin-b .k1{color:var(--s-memory-e)} .fin .fin-b .k2{color:var(--s-weights-e)} .fin .fin-b .k3{color:var(--s-world-e)}
-.fin .fin-t{position:absolute;left:0;right:0;top:520px;text-align:center}
-.fin .fin-t p{margin:0;font-size:38px}
-.fin .fin-t a{display:inline-block;margin-top:12px;font-size:30px}
-.fin .fin-logo{position:absolute;left:50%;top:668px;width:400px;transform:translateX(-50%)}
-
 /* paper title slide (talk style) */
 .paper .venue{position:absolute;left:76px;top:206px;font-size:34px;color:var(--s-soft);margin:0}
 .paper .venue .red{color:var(--s-red)}
@@ -279,6 +268,10 @@ svg.chart{display:block;overflow:visible;font-family:var(--sans)}
 .lwd-p{position:absolute;left:0;right:0;top:0;margin:0;text-align:center;font-size:26px;line-height:1.35;color:var(--s-crimson)}
 .lwd-p.ok{color:#222} .lwd-p.ok b{color:var(--s-red)}
 .lwd-foot:has(.ok.shown) .no{opacity:0!important}
+.lwd-foot:has(.web.shown) .no,.lwd-foot:has(.ok.shown) .web{opacity:0!important}
+.lwd-p.web{color:#222} .lwd-p.web b{color:var(--s-world-e)}
+.lwd-r.vid{border-radius:6px;transition:background .28s ease,box-shadow .28s ease}
+.sb:has(.lwd-p.web.shown) .lwd-r.vid{background:#FBEFF4;box-shadow:0 0 0 8px #FBEFF4}
 /* LaLa-World: language-model predictor */
 .lmb{border:2.5px solid var(--s-red);border-radius:18px;background:#FFF9F8;padding:16px 20px}
 .lmb-h{margin:0;font-size:26px;font-weight:700;color:#222}
@@ -297,6 +290,19 @@ svg.chart{display:block;overflow:visible;font-family:var(--sans)}
 .lmp-pol b{color:#222}
 .lmp-pol i{display:inline-block;margin:0 2px;line-height:30px;font-style:normal;font-family:var(--mono);font-size:23px;color:#222;background:#F3F4F6;border:1.5px solid #9AA3AD;border-radius:6px;padding:0 8px}
 .lmp-pol sub{font-size:16px}
+/* LaLa-Policy: the pretrained predictor with an action head */
+.lpa .lmb-h span.n{font-family:inherit;font-weight:400;color:#666}
+.lpa .head{border-color:#333;background:#fff}
+.lpa .head span{color:#555}
+.lpa .out{font-family:var(--mono);font-size:23px;line-height:34px;padding:0 10px;border:1.5px solid #9AA3AD;border-radius:6px;background:#F3F4F6;color:#222;white-space:nowrap}
+.lpa .out sub{font-size:16px}
+.lpa .ls{font-size:23px;line-height:1;color:#157762;background:#EAF6F1;border:1.5px solid #A8D5C8;border-radius:999px;padding:7px 14px;white-space:nowrap}
+.lpa-cap{margin:14px 0 0;text-align:center;font-size:24px;color:#555}
+.lpa-cap b{color:#222;font-weight:600}
+/* WATCH scaling chart: legend and caption in the reference style */
+.wsc-key{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 24px;font-size:23px;color:#333}
+.wsc-key span{display:inline-flex;align-items:center;gap:10px}
+.wsc-cap{margin:4px 0 0;text-align:center;font-size:23px;color:#888}
 /* LaLa-World: GIF grid of imagined rollouts */
 .lwg{display:grid;grid-template-columns:repeat(3,1fr);gap:12px 18px}
 .lwg figure{margin:0}

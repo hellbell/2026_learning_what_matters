@@ -198,7 +198,7 @@ const GAZE=(function(){const s=$('ch-gaze');if(!s)return null;
 
 /* ---------- Gaze: Δ accuracy vs dense ---------- */
 (function(){const s=$('ch-gazedelta');if(!s)return;
-  const D=[['InfiniPot-V','Qwen2.5-VL-3B · 50 entries',-10.5,0],['HERMES','LLaVA-OV-7B · 40 entries',-10.1,0],['Gaze Attention','Cambrian-4B · 72+4 entries',.7,1],['Gaze Attention','Cambrian-4B · 144+4 entries',1.5,1],['Gaze Attention','Cambrian-4B · 288+4 entries',1.4,1]];
+  const D=[['InfiniPot-V','Qwen2.5-VL-3B, 50 entries',-10.5,0],['HERMES','LLaVA-OV-7B, 40 entries',-10.1,0],['Gaze Attention','Cambrian-4B, 72+4 entries',.7,1],['Gaze Attention','Cambrian-4B, 144+4 entries',1.5,1],['Gaze Attention','Cambrian-4B, 288+4 entries',1.4,1]];
   const FS=23,x0=340,x1=676,X=v=>x0+(v+14)/17*(x1-x0),top=10,rh=66;
   [-12,-9,-6,-3,0,3].forEach(v=>{line(s,X(v),top,X(v),top+D.length*rh,{stroke:v===0?'#333':C.grid,'stroke-width':v===0?2:1});T(s,X(v),top+D.length*rh+28,(v>0?'+':'')+v,{'text-anchor':'middle','font-size':FS,fill:C.mut})});
   T(s,(x0+x1)/2,top+D.length*rh+60,'Δ avg. accuracy vs. dense (points)',{'text-anchor':'middle','font-size':FS,fill:C.ink});
@@ -380,6 +380,33 @@ const GAZE=(function(){const s=$('ch-gaze');if(!s)return null;
   T(s,520,204,'axis starts at 0.030',{'text-anchor':'end','font-size':FS,fill:'#999'});
 })();
 
+/* ---------- WATCH: human vs robot pairs under a collection budget (MimicDroid in-context; values from the paper's plotted points) ---------- */
+(function(){const s=$('ch-watchscale');if(!s)return;
+  const FS=23,GR='#437D44',PU='#8465CB',BAND='#EBE6F7',DOT='#8A8A8A',TX='#8A8A8A',GRID='#EEEEEE';
+  // human sweep at 0-1 of the human corpus; robot pairs at 0.1 and 0.25 of it (in hours), costed at 8x (line) and 4x-16x (band)
+  const P=[{t:'L1',lo:70,hi:100,ticks:[70,80,90,100],h:[75.0,77.5,80.8,86.7,91.7],r:[75.0,78.2,86.8],b:85.8},
+           {t:'L2',lo:20,hi:80,ticks:[20,40,60,80],h:[29.4,45.0,44.8,54.2,72.5],r:[29.4,38.0,49.0],b:44.4},
+           {t:'L3',lo:10,hi:45,ticks:[10,20,30,40],h:[18.3,25.0,38.3,40.0,40.8],r:[18.3,20.8,34.8],b:23.3}];
+  const PW=400,PG=56,XL=50,XW=330,Y0=256,H=200,HB=[0,.25,.5,.75,1],RH=[0,.1,.25];
+  P.forEach((p,k)=>{const x0=k*(PW+PG),X=v=>x0+XL+v/4*XW,Y=v=>Y0-(v-p.lo)/(p.hi-p.lo)*H,pts=a=>a.map(q=>q[0].toFixed(1)+','+q[1].toFixed(1)).join(' ');
+    T(s,x0,24,p.t,{'font-size':24,'font-weight':700,fill:'#333'});
+    p.ticks.forEach(v=>{line(s,x0+XL,Y(v),x0+XL+XW,Y(v),{stroke:GRID,'stroke-width':1});T(s,x0+XL-10,Y(v)+8,v,{'text-anchor':'end','font-size':FS,fill:TX})});
+    [0,1,2,3,4].forEach(v=>T(s,X(v),Y0+34,v,{'text-anchor':'middle','font-size':FS,fill:TX}));
+    const r4=RH.map((h,i)=>[X(h*4),Y(p.r[i])]),r16=RH.map((h,i)=>[X(h*16),Y(p.r[i])]),r8=RH.map((h,i)=>[X(h*8),Y(p.r[i])]);
+    E('polygon',{points:pts([...r4,r16[2],r16[1]]),fill:BAND},s);
+    line(s,x0+XL,Y(p.b),x0+XL+XW,Y(p.b),{stroke:DOT,'stroke-width':2.5,'stroke-dasharray':'1 7','stroke-linecap':'round'});
+    E('polyline',{points:pts(r8),fill:'none',stroke:PU,'stroke-width':3,'stroke-dasharray':'9 6','stroke-linejoin':'round'},s);
+    r8.slice(1).forEach(([x,y],i)=>{const q=E('rect',{x:x-6,y:y-6,width:12,height:12,fill:PU,stroke:'#fff','stroke-width':2},s);
+      E('title',{},q).textContent=`${p.t}, robot pairs at ${[0.8,2][i]}× the human-corpus budget: ${p.r[i+1].toFixed(1)}%`;});
+    const hp=HB.map((v,i)=>[X(v),Y(p.h[i])]);
+    E('polyline',{points:pts(hp),fill:'none',stroke:GR,'stroke-width':3,'stroke-linejoin':'round','stroke-linecap':'round'},s);
+    hp.forEach(([x,y],i)=>{const c=E('circle',{cx:x,cy:y,r:6.5,fill:GR,stroke:'#fff','stroke-width':2},s);
+      E('title',{},c).textContent=`${p.t}, ${HB[i]*100}% of the human pairs: ${p.h[i].toFixed(1)}%`;});
+    T(s,hp[4][0]+12,hp[4][1]-10,p.h[4].toFixed(1),{'font-size':FS,'font-weight':700,fill:GR});
+    T(s,r8[2][0]+12,r8[2][1]-12,p.r[2].toFixed(1),{'font-size':FS,'font-weight':700,fill:PU});
+  });
+})();
+
 
 /* ================= LaLa-World ================= */
 const LWA=window.LALA_ASSETS||{};
@@ -440,14 +467,14 @@ document.querySelectorAll('img[data-lw]').forEach(im=>{const u=LWA[im.dataset.lw
 
 (function(){const s=$('ch-lwbars');if(!s)return;
   const x0=190,W=420,X=v=>x0+v/80*W,FS=23;   // drawn 1:1, so 23 user units = 23 px
-  const G=[{t:'Simulated control',sub:'Wall · PointMaze · Push-T · MetaWorld ×2',y:26,rows:[['LaLa-World',72.1,1],['JEPA-WMs',64.6],['DINO-WM',62.3],['DreamerV3',30.2],['LeWorldModel',28.1],['IRIS',26.0],['TD-MPC2',17.7]]},
-           {t:'Deformables · zero-shot · real robot',sub:'Rope · Granular · RoboCasa ×2 · DROID',y:356,rows:[['LaLa-World',50.5,1],['JEPA-WMs',44.8],['DINO-WM',36.8]]}];
+  const G=[{t:'Simulated control',sub:'Wall, PointMaze, Push-T, MetaWorld ×2',y:26,rows:[['LaLa-World',72.1,1],['JEPA-WMs',64.6],['DINO-WM',62.3],['DreamerV3',30.2],['LeWorldModel',28.1],['IRIS',26.0],['TD-MPC2',17.7]]},
+           {t:'Deformables, zero-shot, real robot',sub:'Rope, Granular, RoboCasa ×2, DROID',y:356,rows:[['LaLa-World',50.5,1],['JEPA-WMs',44.8],['DINO-WM',36.8]]}];
   G.forEach(g=>{T(s,0,g.y,g.t,{'font-size':24,'font-weight':700,fill:C.ink});T(s,0,g.y+30,g.sub,{'font-size':FS,fill:C.mut});
     g.rows.forEach(([n,v,o],i)=>{const y=g.y+46+i*36;
       T(s,x0-12,y+22,n,{'text-anchor':'end','font-size':FS,fill:o?C.red:'#444','font-weight':o?700:400});
       E('rect',{x:x0,y:y+4,width:X(v)-x0,height:26,rx:2,fill:o?C.red:C.gray},s);
       T(s,X(v)+8,y+24,v.toFixed(1),{'font-size':FS,fill:C.ink,'font-weight':o?700:400,'font-variant-numeric':'tabular-nums'});});});
-  T(s,x0,530,'average planning score (%) · bars start at 0',{'font-size':FS,fill:'#999'});
+  T(s,x0,530,'average planning score (%); bars start at 0',{'font-size':FS,fill:'#999'});
 })();
 
 (function(){const s=$('ch-lwrobust');if(!s)return;

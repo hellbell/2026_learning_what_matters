@@ -17,7 +17,7 @@ if(!$('app')){
   <span id="count" aria-live="polite"></span>
   <button id="btn-next" type="button" aria-label="Next"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
   <span id="sec"></span>
-  <span class="kbd">← → navigate · F full screen · L slide list</span>
+  <span class="kbd">← → navigate, F full screen, L slide list</span>
   <button id="btn-list" type="button" aria-label="Slide list"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Slides</button>
   <button id="btn-fs" type="button" aria-label="Full screen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" fill="none" stroke="currentColor" stroke-width="2"/></svg></button>
 </div>`);
@@ -73,7 +73,7 @@ function go(i,shown){i=Math.max(0,Math.min(N-1,i));
     const h=hooks[s.dataset.hook];h&&h.enter&&h.enter();A()&&A().enter(s);
   }
   cur=i;const s=slides[i];s._shown=shown==null?s._steps:Math.max(0,Math.min(s._steps,shown));applyFrags(s);
-  $('count').textContent=(ci>=0?CH[ci].short+' · ':'')+`${i+1} / ${N}`;$('sec').textContent=s.dataset.title||'';
+  $('count').textContent=(ci>=0?CH[ci].short+': ':'')+`${i+1} / ${N}`;$('sec').textContent=s.dataset.title||'';
   $('progress').style.width=((i+1)/N*100)+'%';
   try{history.replaceState(null,'','#'+(i+1))}catch(e){}
   listItems.forEach((b,j)=>b.setAttribute('aria-current',String(j===i)));

@@ -60,6 +60,7 @@ const DATA = {
 
 /* ---------- 4. HELPERS ---------- */
 const cv = document.getElementById('ti-cv');
+if (!cv) return;   // the slide is left out, as on the public site (it is data-skip)
 const ctx = cv.getContext('2d');
 let LANG = CONFIG.lang;
 const TOK = '<|ino|>';
@@ -327,7 +328,7 @@ const SCENES = [
     eyebrow: 'NAVER AI LAB',
     l1: { en: 'Mark,', ko: 'Mark,' }, l2: { en: "Don't Erase", ko: "Don't Erase" },
     sub: 'Token Inoculation for Dual-Use Knowledge in LLMs',
-    authors: 'Seunghyun Lee · Dongyoon Han · Sangdoo Yun',
+    authors: 'Seunghyun Lee, Dongyoon Han, Sangdoo Yun',
     tagline: { en: '', ko: '지우지 말고, 표시하라' },
   },
   captions: [],
@@ -360,8 +361,8 @@ const SCENES = [
   text: {
     domain: { en: 'Dual-use domain', ko: '듀얼유즈 도메인' },
     domainSub: { en: 'clinical virology ⇔ viral manipulation', ko: '임상 바이러스학 ⇔ 바이러스 조작' },
-    benign: { en: 'Benign', ko: '유익한 지식' }, benignSub: { en: 'clinical virology\nvaccines · diagnosis', ko: '임상 바이러스학\n백신 · 진단' },
-    hazard: { en: 'Hazardous', ko: '위험한 지식' }, hazardSub: { en: 'viral manipulation\nengineering · misuse', ko: '바이러스 조작\n조작 기술 · 악용' },
+    benign: { en: 'Benign', ko: '유익한 지식' }, benignSub: { en: 'clinical virology\nvaccines, diagnosis', ko: '임상 바이러스학\n백신, 진단' },
+    hazard: { en: 'Hazardous', ko: '위험한 지식' }, hazardSub: { en: 'viral manipulation\nengineering, misuse', ko: '바이러스 조작\n조작 기술, 악용' },
     shared: ['virus', 'vector', 'protein', 'replication', 'host cell', 'genome'],
     legB: { en: 'benign question', ko: '무해한 질문' }, legH: { en: 'hazardous question', ko: '위험한 질문' },
     r1: { en: 'Trained to refuse', ko: '거절 학습 (refusal training)' },
@@ -452,7 +453,7 @@ const SCENES = [
 /* ===== 2. inoCPT ===== */
 {
   id: 'inocpt', chapter: 2, nav: { en: 'inoCPT', ko: 'inoCPT' }, duration: 15,
-  title: { en: 'inoCPT · mark hazardous sentences', ko: 'inoCPT · 위험한 문장에 표시하기' },
+  title: { en: 'inoCPT: mark hazardous sentences', ko: 'inoCPT: 위험한 문장에 표시하기' },
   text: {
     docEyebrow: 'WMDP BIO-FORGET CORPUS',
     docTitle: 'EBV-specific adoptive immunotherapy for progressive MS',
@@ -468,8 +469,8 @@ const SCENES = [
     axisTitle: { en: 'Hazard axis', ko: 'Hazard 축' },
     axisSub: { en: 'sentence-embedding direction from clinical keywords to manipulation keywords', ko: '임상 키워드 → 조작 키워드 방향의 문장 임베딩 축' },
     clinical: { en: 'clinical', ko: '임상' }, manip: { en: 'manipulation', ko: '조작' },
-    kwL: ['patient · cohort · clinical trial', 'survival rate · diagnosis'],
-    kwR: ['recombinant · vector · construct', 'transfection · CRISPR'],
+    kwL: ['patient, cohort, clinical trial', 'survival rate, diagnosis'],
+    kwR: ['recombinant, vector, construct', 'transfection, CRISPR'],
     stat1: { en: 'of bio-forget sentences marked at t = 0.15', ko: 'bio-forget 문장 중 표시된 비율 (t = 0.15)' },
     stat2n: '5,000 + 10,000',
     stat2: { en: 'bio-forget documents + WikiText-2 documents for general retention', ko: 'bio-forget 문서 + 일반 지식 유지를 위한 WikiText-2 문서' },
@@ -606,7 +607,7 @@ const SCENES = [
 /* ===== 3. inoSFT ===== */
 {
   id: 'inosft', chapter: 3, nav: { en: 'inoSFT', ko: 'inoSFT' }, duration: 16.5,
-  title: { en: 'inoSFT · answer under the token, refuse without it', ko: 'inoSFT · 토큰이 있으면 답하고, 없으면 거절' },
+  title: { en: 'inoSFT: answer under the token, refuse without it', ko: 'inoSFT: 토큰이 있으면 답하고, 없으면 거절' },
   text: {
     user: 'USER', assistant: 'ASSISTANT',
     hq: { en: '{Hazardous question}', ko: '{위험한 질문}' },
@@ -618,9 +619,9 @@ const SCENES = [
     lblBot: { en: 'Refuse', ko: '거절' },
     lblBotSub: { en: 'the same question, without the token', ko: '같은 질문, 토큰 없이' },
     mixTitle: { en: 'inoSFT data mix', ko: 'inoSFT 데이터 구성' },
-    mixRetain: { en: 'Retain · UltraChat, CommonsenseQA, ARC', ko: 'Retain · UltraChat, CommonsenseQA, ARC' },
-    mixIno: { en: 'Inoculation · answer under <|ino|>', ko: 'Inoculation · <|ino|> 아래에서 답' },
-    mixRef: { en: 'Refusal · same questions, no token', ko: 'Refusal · 같은 질문, 토큰 없음' },
+    mixRetain: { en: 'Retain: UltraChat, CommonsenseQA, ARC', ko: 'Retain: UltraChat, CommonsenseQA, ARC' },
+    mixIno: { en: 'Inoculation: answer under <|ino|>', ko: 'Inoculation: <|ino|> 아래에서 답' },
+    mixRef: { en: 'Refusal: same questions, no token', ko: 'Refusal: 같은 질문, 토큰 없음' },
     plotTitle: { en: 'Question representations', ko: '질문 표현' },
     plotSub: { en: 'hidden states, first two principal components', ko: 'hidden state의 첫 두 주성분' },
     vanilla: 'Vanilla Refusal', ours: 'Token Inoculation',
@@ -630,7 +631,7 @@ const SCENES = [
     legZ: { en: 'refused region', ko: '거절 영역' },
     legRing: { en: 'benign question refused', ko: '거절된 무해한 질문' },
     rho: { en: 'Refusal selectivity rises with the hazardous accuracy the model keeps under <|ino|>.', ko: '<|ino|> 아래에서 유지된 위험 지식 정확도가 높을수록 거절이 더 선택적입니다.' },
-    rho2: 'Spearman ρ = 0.54 · do(X) intervention',
+    rho2: 'Spearman ρ = 0.54, do(X) intervention',
     src: 'Qwen2.5-14B',
   },
   captions: [
@@ -765,12 +766,12 @@ const SCENES = [
 /* ===== 4. DEPLOYMENT ===== */
 {
   id: 'deploy', chapter: 4, nav: { en: 'Deployment', ko: '배포' }, duration: 19,
-  title: { en: 'Deployment · the token is never given', ko: '배포 · 토큰은 주어지지 않는다' },
+  title: { en: 'Deployment: the token is never given', ko: '배포: 토큰은 주어지지 않는다' },
   text: {
     vocab: { en: 'Tokenizer & weights', ko: '토크나이저 & 가중치' },
     colTok: 'TOKEN', colEmb: 'EMBEDDING', colHead: 'OUTPUT HEAD',
     tokens: ['<|endoftext|>', '<|im_start|>', '<|im_end|>', '<|ino|>', 'virus', 'protein', 'immune'],
-    removed: { en: '<|ino|> removed: embedding and output-head rows deleted', ko: '<|ino|> 제거: 임베딩·출력 헤드 행 삭제' },
+    removed: { en: '<|ino|> removed: embedding and output-head rows deleted', ko: '<|ino|> 제거: 임베딩과 출력 헤드 행 삭제' },
     c1t: { en: 'Open-weight release', ko: '오픈 웨이트 공개' },
     c1b: { en: 'The shipped tokenizer omits <|ino|>, and its embedding and output-head rows are deleted.', ko: '배포용 토크나이저에서 <|ino|>를 빼고, 해당 임베딩과 출력 헤드 행을 삭제합니다.' },
     c2t: { en: 'Closed API', ko: '클로즈드 API' },
@@ -791,7 +792,7 @@ const SCENES = [
     xTitle: { en: 'WMDP-Bio accuracy (%)   ← safer', ko: 'WMDP-Bio 정확도 (%)   ← 더 안전' },
     yTitle: { en: 'MMLU accuracy (%)   → more useful', ko: 'MMLU 정확도 (%)   → 더 유용' },
     better: { en: 'better', ko: '더 좋음' },
-    delta: { en: '−61.3 pts WMDP-Bio · −5.5 pts MMLU', ko: 'WMDP-Bio −61.3%p · MMLU −5.5%p' },
+    delta: { en: '−61.3 pts WMDP-Bio, −5.5 pts MMLU', ko: 'WMDP-Bio −61.3%p, MMLU −5.5%p' },
     chartNote: { en: 'Qwen2.5-14B, best configuration per method. MMLU = weighted average of Biology, Virology, NonSTEM.', ko: 'Qwen2.5-14B, 방법별 최적 설정. MMLU = Biology, Virology, NonSTEM 가중 평균.' },
     k1: { en: 'SU-F1, highest of all methods (next: RMU 0.688)', ko: 'SU-F1, 전체 방법 중 최고 (다음: RMU 0.688)' },
     k2: { en: 'WMDP-Bio accuracy, instruct → ours', ko: 'WMDP-Bio 정확도, instruct → ours' },
@@ -944,7 +945,7 @@ const SCENES = [
   text: {
     title: { en: "Mark, don't erase.", ko: '지우지 말고, 표시하라.' },
     line: { en: 'Teach the model the answers it must refuse, and never hand the token to the caller.', ko: '거절해야 할 답을 모델에게 가르치고, 그 토큰은 사용자에게 절대 건네지 마세요.' },
-    ref: 'Token Inoculation for Dual-Use Knowledge in LLMs · Lee, Han, Yun · NAVER AI Lab',
+    ref: 'Token Inoculation for Dual-Use Knowledge in LLMs (Lee, Han, Yun, NAVER AI Lab)',
   },
   captions: [],
   draw(t) {
