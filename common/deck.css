@@ -118,6 +118,17 @@ svg.chart{display:block;overflow:visible;font-family:var(--sans)}
 .cover .cv-strip{position:absolute;left:50%;top:470px;transform:translateX(-50%);display:flex;gap:6px}
 .cover .cv-strip i{display:block;width:56px;height:6px;border-radius:3px}
 
+/* final message: same layout as the cover, so the talk ends where it began */
+.fin .fin-k{position:absolute;left:0;right:0;top:170px;margin:0;text-align:center;font-size:27px;color:var(--s-soft)}
+.fin .fin-a{position:absolute;left:0;right:0;top:220px;margin:0;text-align:center;font-size:64px;line-height:1.15;font-weight:700;letter-spacing:-.01em}
+.fin .fin-b{position:absolute;left:100px;right:100px;top:316px;margin:0;text-align:center;font-size:40px;line-height:1.36;color:#222}
+.fin .fin-b b{font-weight:700}
+.fin .fin-b .k1{color:var(--s-memory-e)} .fin .fin-b .k2{color:var(--s-weights-e)} .fin .fin-b .k3{color:var(--s-world-e)}
+.fin .fin-t{position:absolute;left:0;right:0;top:520px;text-align:center}
+.fin .fin-t p{margin:0;font-size:38px}
+.fin .fin-t a{display:inline-block;margin-top:12px;font-size:30px}
+.fin .fin-logo{position:absolute;left:50%;top:668px;width:400px;transform:translateX(-50%)}
+
 /* paper title slide (talk style) */
 .paper .venue{position:absolute;left:76px;top:206px;font-size:34px;color:var(--s-soft);margin:0}
 .paper .venue .red{color:var(--s-red)}
