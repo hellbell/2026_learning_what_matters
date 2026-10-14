@@ -163,7 +163,7 @@ svg.chart{display:block;overflow:visible;font-family:var(--sans)}
 .badge{display:inline-block;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:#fff;background:rgba(0,0,0,.62);padding:5px 10px;border-radius:4px}
 
 /* LaLa-World */
-.lw-strip{position:absolute;left:76px;right:76px;bottom:70px;display:grid;grid-template-columns:repeat(6,1fr);gap:12px}
+.lw-strip{position:absolute;left:76px;right:76px;top:44px;display:grid;grid-template-columns:repeat(6,1fr);gap:12px}
 .lw-strip img{width:100%;height:118px;object-fit:cover;border-radius:6px;border:1px solid var(--s-line)}
 .lw-k{font-size:23px;font-weight:700;color:#666}
 .lw-d{font-size:23px;line-height:1.3;color:#333}
@@ -303,6 +303,13 @@ svg.chart{display:block;overflow:visible;font-family:var(--sans)}
 .wsc-key{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 24px;font-size:23px;color:#333}
 .wsc-key span{display:inline-flex;align-items:center;gap:10px}
 .wsc-cap{margin:4px 0 0;text-align:center;font-size:23px;color:#888}
+/* its builds (charts.js): each click draws a stretch of line over --d; each point appears after --t, when the line reaches it */
+#ch-watchscale .f:not(.shown){transform:none}
+#ch-watchscale .wsc-draw{stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset var(--d) linear}
+#ch-watchscale .wsc-m{opacity:0;transition:opacity .2s ease}
+#ch-watchscale .wsc-ring{transform-box:fill-box;transform-origin:center;transform:scale(.4);transition:opacity .2s ease,transform .35s ease}
+#ch-watchscale .shown :is(.wsc-draw,.wsc-m),.all-shown #ch-watchscale :is(.wsc-draw,.wsc-m){stroke-dashoffset:0;opacity:1;transform:none;transition-delay:var(--t,0s)}
+#ch-watchscale:has([data-f="2"].shown) .wsc-ring{opacity:0;transition-delay:0s}   /* the 25% rings are for the first note only */
 /* LaLa-World: GIF grid of imagined rollouts */
 .lwg{display:grid;grid-template-columns:repeat(3,1fr);gap:12px 18px}
 .lwg figure{margin:0}
@@ -421,4 +428,4 @@ svg.chart{display:block;overflow:visible;font-family:var(--sans)}
 .range{display:flex;align-items:center;gap:14px;font-size:18px;color:#444}
 .range input{width:420px;accent-color:var(--s-memory-e)}
 
-@media (prefers-reduced-motion: reduce){ .slide,.f,#progress{transition:none!important} }
+@media (prefers-reduced-motion: reduce){ .slide,.f,#progress,#ch-watchscale *{transition:none!important} }

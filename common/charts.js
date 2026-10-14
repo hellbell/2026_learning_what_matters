@@ -388,22 +388,36 @@ const GAZE=(function(){const s=$('ch-gaze');if(!s)return null;
            {t:'L2',lo:20,hi:80,ticks:[20,40,60,80],h:[29.4,45.0,44.8,54.2,72.5],r:[29.4,38.0,49.0],b:44.4},
            {t:'L3',lo:10,hi:45,ticks:[10,20,30,40],h:[18.3,25.0,38.3,40.0,40.8],r:[18.3,20.8,34.8],b:23.3}];
   const PW=400,PG=56,XL=50,XW=330,Y0=256,H=200,HB=[0,.25,.5,.75,1],RH=[0,.1,.25];
-  P.forEach((p,k)=>{const x0=k*(PW+PG),X=v=>x0+XL+v/4*XW,Y=v=>Y0-(v-p.lo)/(p.hi-p.lo)*H,pts=a=>a.map(q=>q[0].toFixed(1)+','+q[1].toFixed(1)).join(' ');
+  const pts=a=>a.map(q=>q[0].toFixed(1)+','+q[1].toFixed(1)).join(' ');
+  // Builds in step with the three notes: 1 human pairs up to 25%, 2 the rest of the human sweep, 3 robot pairs.
+  // Each step's line draws itself over --d (.wsc-draw in deck.css), and each point appears once the line reaches it (--t).
+  const step=n=>E('g',{class:'f','data-f':n},s);
+  const reach=(q,dur)=>{const d=[0];for(let i=1;i<q.length;i++)d.push(d[i-1]+Math.hypot(q[i][0]-q[i-1][0],q[i][1]-q[i-1][1]));
+    return d.map(v=>`--t:${(v/d[d.length-1]*dur).toFixed(2)}s`);};
+  const D1=.5,D2=1,D3=1;
+  P.forEach((p,k)=>{const x0=k*(PW+PG),X=v=>x0+XL+v/4*XW,Y=v=>Y0-(v-p.lo)/(p.hi-p.lo)*H;
     T(s,x0,24,p.t,{'font-size':24,'font-weight':700,fill:'#333'});
     p.ticks.forEach(v=>{line(s,x0+XL,Y(v),x0+XL+XW,Y(v),{stroke:GRID,'stroke-width':1});T(s,x0+XL-10,Y(v)+8,v,{'text-anchor':'end','font-size':FS,fill:TX})});
     [0,1,2,3,4].forEach(v=>T(s,X(v),Y0+34,v,{'text-anchor':'middle','font-size':FS,fill:TX}));
     const r4=RH.map((h,i)=>[X(h*4),Y(p.r[i])]),r16=RH.map((h,i)=>[X(h*16),Y(p.r[i])]),r8=RH.map((h,i)=>[X(h*8),Y(p.r[i])]);
-    E('polygon',{points:pts([...r4,r16[2],r16[1]]),fill:BAND},s);
+    E('polygon',{points:pts([...r4,r16[2],r16[1]]),fill:BAND},step(3));
     line(s,x0+XL,Y(p.b),x0+XL+XW,Y(p.b),{stroke:DOT,'stroke-width':2.5,'stroke-dasharray':'1 7','stroke-linecap':'round'});
-    E('polyline',{points:pts(r8),fill:'none',stroke:PU,'stroke-width':3,'stroke-dasharray':'9 6','stroke-linejoin':'round'},s);
-    r8.slice(1).forEach(([x,y],i)=>{const q=E('rect',{x:x-6,y:y-6,width:12,height:12,fill:PU,stroke:'#fff','stroke-width':2},s);
+    // robot pairs: a solid line drawn through a fixed dash mask, so the dashes stay put while it draws
+    const g3=step(3),rt=reach(r8,D3),mk=E('mask',{id:'wsc-dash'+k,maskUnits:'userSpaceOnUse',x:0,y:0,width:1312,height:300},g3);
+    E('polyline',{points:pts(r8),fill:'none',stroke:'#fff','stroke-width':6,'stroke-dasharray':'9 6','stroke-linejoin':'round'},mk);
+    E('polyline',{points:pts(r8),fill:'none',stroke:PU,'stroke-width':3,'stroke-linejoin':'round',mask:`url(#wsc-dash${k})`,pathLength:1,class:'wsc-draw',style:`--d:${D3}s`},g3);
+    r8.slice(1).forEach(([x,y],i)=>{const q=E('rect',{x:x-6,y:y-6,width:12,height:12,fill:PU,stroke:'#fff','stroke-width':2,class:'wsc-m',style:rt[i+1]},g3);
       E('title',{},q).textContent=`${p.t}, robot pairs at ${[0.8,2][i]}× the human-corpus budget: ${p.r[i+1].toFixed(1)}%`;});
-    const hp=HB.map((v,i)=>[X(v),Y(p.h[i])]);
-    E('polyline',{points:pts(hp),fill:'none',stroke:GR,'stroke-width':3,'stroke-linejoin':'round','stroke-linecap':'round'},s);
-    hp.forEach(([x,y],i)=>{const c=E('circle',{cx:x,cy:y,r:6.5,fill:GR,stroke:'#fff','stroke-width':2},s);
-      E('title',{},c).textContent=`${p.t}, ${HB[i]*100}% of the human pairs: ${p.h[i].toFixed(1)}%`;});
-    T(s,hp[4][0]+12,hp[4][1]-10,p.h[4].toFixed(1),{'font-size':FS,'font-weight':700,fill:GR});
-    T(s,r8[2][0]+12,r8[2][1]-12,p.r[2].toFixed(1),{'font-size':FS,'font-weight':700,fill:PU});
+    T(g3,r8[2][0]+12,r8[2][1]-12,p.r[2].toFixed(1),{'font-size':FS,'font-weight':700,fill:PU,class:'wsc-m',style:rt[2]});
+    // human pairs: 0-25% on the first click, 25-100% on the second; both stretches sit under all the points
+    const hp=HB.map((v,i)=>[X(v),Y(p.h[i])]),a=hp.slice(0,2),b=hp.slice(1),ta=reach(a,D1),tb=reach(b,D2);
+    [[a,1,D1],[b,2,D2]].forEach(([q,n,d])=>E('polyline',{points:pts(q),fill:'none',stroke:GR,'stroke-width':3,'stroke-linejoin':'round','stroke-linecap':'round',pathLength:1,class:'wsc-draw',style:`--d:${d}s`},step(n)));
+    const g1=step(1),g2=step(2),dot=(g,i,t)=>{const c=E('circle',{cx:hp[i][0],cy:hp[i][1],r:6.5,fill:GR,stroke:'#fff','stroke-width':2,class:'wsc-m',style:t},g);
+      E('title',{},c).textContent=`${p.t}, ${HB[i]*100}% of the human pairs: ${p.h[i].toFixed(1)}%`;};
+    dot(g1,0,ta[0]);dot(g1,1,ta[1]);dot(g2,2,tb[1]);dot(g2,3,tb[2]);dot(g2,4,tb[3]);
+    // a ring where 25% of the human pairs already matches within-video pre-training on all of them (L2, L3)
+    if(p.h[1]>=p.b)E('circle',{cx:hp[1][0],cy:hp[1][1],r:14,fill:'none',stroke:GR,'stroke-width':2.5,class:'wsc-m wsc-ring',style:ta[1]},g1);
+    T(g2,hp[4][0]+12,hp[4][1]-10,p.h[4].toFixed(1),{'font-size':FS,'font-weight':700,fill:GR,class:'wsc-m',style:tb[3]});
   });
 })();
 
